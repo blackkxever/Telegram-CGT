@@ -1,341 +1,1047 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Login con Telegram</title>
-  <style>
-    body { 
-      font-family: system-ui, sans-serif; 
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh; 
-      margin: 0; 
-      display: flex; 
-      justify-content: center; 
-      align-items: center;
-      padding: 20px;
-    }
-    .card { 
-      width: 100%;
-      max-width: 500px; 
-      background: white; 
-      border-radius: 16px; 
-      padding: 32px; 
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2); 
-      text-align: center; 
-    }
-    h2 { 
-      margin: 0 0 8px; 
-      color: #1e293b;
-    }
-    .subtitle {
-      color: #64748b;
-      font-size: 14px;
-      margin-bottom: 24px;
-    }
-    .telegram-widget {
-      margin: 20px 0;
-    }
-    #userInfo { 
-      display: none; 
-      text-align: left;
-      margin-top: 24px;
-    }
-    .profile-header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 20px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border-radius: 12px;
-      color: white;
-      margin-bottom: 20px;
-    }
-    .profile-photo {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      border: 3px solid white;
-      object-fit: cover;
-    }
-    .profile-photo-placeholder {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      border: 3px solid white;
-      background: rgba(255,255,255,0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 36px;
-    }
-    .profile-name {
-      flex: 1;
-    }
-    .profile-name h3 {
-      margin: 0 0 4px;
-      font-size: 24px;
-    }
-    .profile-name p {
-      margin: 0;
-      opacity: 0.9;
-      font-size: 14px;
-    }
-    .info-section {
-      background: #f8fafc;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 16px;
-    }
-    .info-section h4 {
-      margin: 0 0 16px;
-      color: #1e293b;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 12px 0;
-      border-bottom: 1px solid #e2e8f0;
-    }
-    .info-row:last-child {
-      border-bottom: none;
-    }
-    .info-label {
-      color: #64748b;
-      font-size: 14px;
-      font-weight: 500;
-    }
-    .info-value {
-      color: #1e293b;
-      font-size: 14px;
-      font-weight: 600;
-      text-align: right;
-      word-break: break-all;
-    }
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 16px;
-      background: #dcfce7;
-      color: #166534;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-      margin-top: 16px;
-    }
-    .loading {
-      padding: 16px;
-      background: #f1f5f9;
-      border-radius: 12px;
-      margin-top: 20px;
-      color: #64748b;
-    }
-    .error {
-      padding: 16px;
-      background: #fee2e2;
-      border-radius: 12px;
-      margin-top: 20px;
-      color: #991b1b;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Telegram Search</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Google Sans', sans-serif;
+            background: #ffffff;
+            padding: 16px 20px;
+            height: 100vh;
+            overflow-x: hidden;
+        }
+        .header-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .menu-button {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            background: transparent;
+            transition: background 0.2s ease;
+            flex-shrink: 0;
+        }
+        .menu-button:hover {
+            background: #E6E8EA;
+        }
+        .menu-icon {
+            font-size: 24px;
+            color: #6E7276;
+        }
+        .search-container {
+            flex: 1;
+        }
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #F3F4F6;
+            border-radius: 100px;
+            padding: 12px 20px;
+            gap: 12px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            min-height: 48px;
+        }
+        .search-box:focus-within {
+            border-color: #3290EC;
+            background: #ffffff;
+        }
+        .search-icon {
+            color: #9A9EA2;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        .search-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 16px;
+            color: #000;
+            font-weight: 400;
+        }
+        .search-input::placeholder {
+            color: #A2A2A2;
+        }
+        .tabs {
+            display: flex;
+            gap: 28px;
+            border-bottom: 1px solid #E4E4E4;
+            overflow-x: auto;
+            scrollbar-width: none;
+            margin-bottom: 0;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, opacity 0.3s ease, margin-bottom 0.3s ease;
+        }
+        .tabs.active {
+            max-height: 100px;
+            opacity: 1;
+            margin-bottom: 0;
+        }
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+        .tab {
+            padding-bottom: 16px;
+            font-size: 15px;
+            color: #6E7276;
+            cursor: pointer;
+            position: relative;
+            white-space: nowrap;
+            flex-shrink: 0;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+        .tab:hover {
+            color: #3290EC;
+        }
+        .tab.active {
+            color: #3290EC;
+            font-weight: 600;
+        }
+        .tab.active::after {
+            content: "";
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            border-radius: 10px;
+            background: #3290EC;
+        }
+        .chat-list {
+            display: flex;
+            flex-direction: column;
+            margin-top: 0;
+            transition: margin-top 0.3s ease;
+        }
+        .chat-list.with-tabs {
+            margin-top: 20px;
+        }
+        .chat-list.hidden {
+            display: none;
+        }
+        .chat-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid #E4E4E4;
+            cursor: pointer;
+        }
+        .chat-item:hover {
+            background: #F3F4F6;
+            padding-left: 20px;
+            padding-right: 20px;
+            margin-left: -20px;
+            margin-right: -20px;
+        }
+        .avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #3290EC;
+            color: white;
+            font-size: 24px;
+            font-weight: 500;
+            overflow: hidden;
+        }
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .chat-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .chat-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+        .chat-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #202124;
+        }
+        .verified-badge {
+            font-size: 18px;
+            color: #3290EC;
+        }
+        .chat-message {
+            font-size: 14px;
+            color: #5F6368;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-weight: 400;
+            line-height: 1.4;
+        }
+        .chat-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .chat-time {
+            font-size: 13px;
+            color: #9A9EA2;
+            font-weight: 500;
+        }
+        .loading-badge {
+            background: #9A9EA2;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 20px;
+            text-align: center;
+            letter-spacing: 0.8px;
+        }
+        .open-badge {
+            background: #3290EC;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 20px;
+            text-align: center;
+            letter-spacing: 0.8px;
+        }
+        .fab {
+            background: #3290EC;
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            z-index: 999;
+        }
+        .fab:hover {
+            background: #2B83D8;
+        }
+        .fab-icon {
+            color: white;
+            font-size: 24px;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        .modal {
+            background: #ffffff;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 420px;
+            transform: scale(0.95) translateY(10px);
+            opacity: 0;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-overlay.active .modal {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 20px 16px 20px;
+            border-bottom: 1px solid #E4E4E4;
+        }
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #202124;
+        }
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            background: transparent;
+            color: #6E7276;
+            transition: background 0.2s ease;
+        }
+        .modal-close:hover {
+            background: #F3F4F6;
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .modal-description {
+            font-size: 15px;
+            color: #5F6368;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+        .modal-input-container {
+            display: flex;
+            align-items: center;
+            background: #F3F4F6;
+            border-radius: 8px;
+            padding: 12px 16px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .modal-input-container:focus-within {
+            border-color: #3290EC;
+            background: #ffffff;
+        }
+        .modal-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 16px;
+            color: #000;
+            font-weight: 400;
+        }
+        .modal-input::placeholder {
+            color: #A2A2A2;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 16px 20px 20px 20px;
+        }
+        .modal-button {
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            letter-spacing: 0.5px;
+        }
+        .modal-button.cancel {
+            background: transparent;
+            color: #6E7276;
+        }
+        .modal-button.cancel:hover {
+            background: #F3F4F6;
+        }
+        .modal-button.confirm {
+            background: #3290EC;
+            color: white;
+        }
+        .modal-button.confirm:hover {
+            background: #2B83D8;
+        }
+        .modal-button.confirm:disabled {
+            background: #9A9EA2;
+            cursor: not-allowed;
+        }
+        .success-message {
+            position: fixed;
+            bottom: 90px;
+            left: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 1001;
+        }
+        .success-message.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .detail-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: #ffffff;
+            z-index: 2000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+        .detail-screen.active {
+            transform: translateX(0);
+        }
+        .detail-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 20px;
+            position: sticky;
+            top: 0;
+            background: #ffffff;
+            z-index: 10;
+        }
+        .back-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            background: transparent;
+            transition: background 0.2s ease;
+            flex-shrink: 0;
+        }
+        .back-button:hover {
+            background: #E6E8EA;
+        }
+        .back-icon {
+            font-size: 24px;
+            color: #6E7276;
+        }
+        .detail-header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #202124;
+            flex: 1;
+        }
+        .detail-content {
+            padding: 0;
+        }
+        .detail-banner {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #3290EC 0%, #2B83D8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .detail-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .detail-avatar-container {
+            padding: 0 20px;
+            margin-top: -40px;
+            position: relative;
+            z-index: 5;
+        }
+        .detail-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #3290EC;
+            border: 4px solid #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: 500;
+            overflow: hidden;
+        }
+        .detail-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .detail-info {
+            padding: 16px 20px;
+        }
+        .detail-name-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .detail-name {
+            font-size: 24px;
+            font-weight: 600;
+            color: #202124;
+        }
+        .detail-username {
+            font-size: 15px;
+            color: #6E7276;
+            margin-bottom: 12px;
+        }
+        .detail-subscribers {
+            font-size: 14px;
+            color: #5F6368;
+            margin-bottom: 20px;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .detail-online {
+            font-size: 14px;
+            color: #10B981;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .online-icon {
+            font-size: 10px;
+            color: #10B981;
+        }
+        .detail-description {
+            font-size: 15px;
+            color: #202124;
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+        .detail-actions {
+            padding: 0 20px 20px 20px;
+        }
+        .action-button {
+            width: 100%;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: #3290EC;
+            color: white;
+        }
+        .action-button:hover {
+            background: #2B83D8;
+        }
+        .detail-divider {
+            height: 1px;
+            background: #E4E4E4;
+            margin: 20px 0;
+        }
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 20px;
+        }
+        .login-overlay.hidden {
+            display: none;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .login-card h2 {
+            margin: 0 0 8px;
+            color: #1e293b;
+        }
+        .login-subtitle {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        .telegram-widget {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+        }
+    </style>
 </head>
 <body>
-<div class="card">
-  <h2>🔐 Login con Telegram</h2>
-  <p class="subtitle">Inicia sesión de forma segura</p>
-  
-  <div class="telegram-widget">
-    <script async src="https://telegram.org/js/telegram-widget.js?22"
-      data-telegram-login="CGTelegram_bot"
-      data-size="large"
-      data-userpic="true"
-      data-request-access="write"
-      data-onauth="onTelegramAuth"
-      data-auth-url="https://telegram-cgt.netlify.app/">
-    </script>
-  </div>
-  
-  <div id="loading" class="loading" style="display:none;">
-    ⏳ Guardando datos en Firebase...
-  </div>
-  
-  <div id="error" class="error" style="display:none;"></div>
-  
-  <div id="userInfo"></div>
-</div>
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-card">
+            <h2>🔐 Login con Telegram</h2>
+            <p class="login-subtitle">Inicia sesión de forma segura para continuar</p>
+            
+            <div class="telegram-widget">
+                <script async src="https://telegram.org/js/telegram-widget.js?22"
+                    data-telegram-login="CGTelegram_bot"
+                    data-size="large"
+                    data-userpic="true"
+                    data-request-access="write"
+                    data-onauth="onTelegramAuth">
+                </script>
+            </div>
+        </div>
+    </div>
 
-<!-- FIREBASE -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
-  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-  
-  const firebaseConfig = {
-    apiKey: "AIzaSyB7B5c4FvtJbAn9Vrr2pMrfBb5ufTW3JHU",
-    authDomain: "telegram-cgt.firebaseapp.com",
-    projectId: "telegram-cgt",
-    databaseURL: "https://telegram-cgt-default-rtdb.firebaseio.com",
-    storageBucket: "telegram-cgt.firebasestorage.app",
-    messagingSenderId: "815818658380",
-    appId: "1:815818658380:web:e164fc9456157111551ae9",
-    measurementId: "G-0T4DKXFJ9E"
-  };
-  
-  const app = initializeApp(firebaseConfig);
-  const database = getDatabase(app);
-  const firestore = getFirestore(app);
-  
-  function formatDate(timestamp) {
-    const date = new Date(timestamp * 1000);
-    return date.toLocaleString('es-ES', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  }
-  
-  function formatTimestamp(isoString) {
-    const date = new Date(isoString);
-    return date.toLocaleString('es-ES', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    });
-  }
-  
-  window.onTelegramAuth = async function(user) {
-    const loading = document.getElementById("loading");
-    const error = document.getElementById("error");
-    const userInfo = document.getElementById("userInfo");
-    const widget = document.querySelector(".telegram-widget");
+    <div class="header-container">
+        <button class="menu-button">
+            <span class="material-icons menu-icon">menu</span>
+        </button>
+        <div class="search-container">
+            <div class="search-box">
+                <span class="material-icons search-icon">search</span>
+                <input type="text" class="search-input" placeholder="Search">
+            </div>
+        </div>
+    </div>
     
-    loading.style.display = "block";
-    error.style.display = "none";
-    userInfo.style.display = "none";
+    <div class="tabs">
+        <div class="tab active">All</div>
+        <div class="tab">Users</div>
+        <div class="tab">Groups</div>
+        <div class="tab">Channels</div>
+        <div class="tab">Bots</div>
+    </div>
     
-    try {
-      const timestamp = new Date().toISOString();
-      const userData = {
-        id: user.id,
-        first_name: user.first_name || "",
-        last_name: user.last_name || "",
-        username: user.username || null,
-        photo_url: user.photo_url || null,
-        auth_date: user.auth_date,
-        hash: user.hash,
-        timestamp: timestamp,
-        last_login: timestamp
-      };
-      
-      // Guardar en Realtime Database
-      await set(ref(database, 'usuarios/' + user.id), userData);
-      
-      // Guardar también en Firestore
-      await setDoc(
-        doc(firestore, "usuarios", String(user.id)),
-        userData,
-        { merge: true }
-      );
-      
-      // Ocultar widget y loading
-      widget.style.display = "none";
-      loading.style.display = "none";
-      
-      // Mostrar información del usuario
-      const photoHtml = user.photo_url 
-        ? `<img src="${user.photo_url}" alt="Foto de perfil" class="profile-photo">`
-        : `<div class="profile-photo-placeholder">${user.first_name.charAt(0).toUpperCase()}</div>`;
-      
-      userInfo.innerHTML = `
-        <div class="profile-header">
-          ${photoHtml}
-          <div class="profile-name">
-            <h3>${user.first_name} ${user.last_name || ""}</h3>
-            <p>${user.username ? '@' + user.username : 'Sin username'}</p>
-          </div>
+    <div class="chat-list" id="chatList"></div>
+
+    <button class="fab" id="fabButton">
+        <span class="material-icons fab-icon">add</span>
+    </button>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Enter Link</h2>
+                <button class="modal-close" id="modalClose">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-description">Please enter a t.me/username, t.me/joinchat/ or tg://resolve link:</p>
+                <div class="modal-input-container">
+                    <input type="text" class="modal-input" id="urlInput" placeholder="t.me/username">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-button cancel" id="cancelButton">CANCEL</button>
+                <button class="modal-button confirm" id="confirmButton">OPEN</button>
+            </div>
         </div>
+    </div>
+
+    <div class="detail-screen" id="detailScreen">
+        <div class="detail-header">
+            <button class="back-button" id="backButton">
+                <span class="material-icons back-icon">arrow_back</span>
+            </button>
+            <span class="detail-header-title" id="detailHeaderTitle">Channel Info</span>
+        </div>
+        <div class="detail-content" id="detailContent">
+            <div class="detail-banner" id="detailBanner">
+                <span class="material-icons" style="font-size: 64px; color: rgba(255,255,255,0.3);">telegram</span>
+            </div>
+            <div class="detail-avatar-container">
+                <div class="detail-avatar" id="detailAvatar">
+                    <span style="font-size: 32px;">T</span>
+                </div>
+            </div>
+            <div class="detail-info">
+                <div class="detail-name-container">
+                    <span class="detail-name" id="detailName">Loading...</span>
+                    <span class="material-icons verified-badge" id="detailVerified" style="display: none;">verified</span>
+                </div>
+                <div class="detail-username" id="detailUsername">@username</div>
+                <div class="detail-subscribers" id="detailSubscribers">
+                    <span id="detailSubscribersText">Loading subscribers...</span>
+                    <div class="detail-online" id="detailOnline" style="display: none;">
+                        <span class="material-icons online-icon">fiber_manual_record</span>
+                        <span id="detailOnlineText">71 online</span>
+                    </div>
+                </div>
+                <div class="detail-description" id="detailDescription">Loading description...</div>
+            </div>
+            <div class="detail-divider"></div>
+            <div class="detail-actions">
+                <button class="action-button" id="openChannelButton">
+                    <span class="material-icons" style="font-size: 20px;">open_in_new</span>
+                    Open Channel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="success-message" id="successMessage">URL saved successfully!</div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+        import { getFirestore, doc, setDoc, collection, addDoc, serverTimestamp, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB7B5c4FvtJbAn9Vrr2pMrfBb5ufTW3JHU",
+            authDomain: "telegram-cgt.firebaseapp.com",
+            projectId: "telegram-cgt",
+            databaseURL: "https://telegram-cgt-default-rtdb.firebaseio.com",
+            storageBucket: "telegram-cgt.firebasestorage.app",
+            messagingSenderId: "815818658380",
+            appId: "1:815818658380:web:e164fc9456157111551ae9",
+            measurementId: "G-0T4DKXFJ9E"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const db = getFirestore(app);
+
+        const loginOverlay = document.getElementById('loginOverlay');
+        const searchInput = document.querySelector('.search-input');
+        const tabs = document.querySelector('.tabs');
+        const chatList = document.getElementById('chatList');
+        const fabButton = document.getElementById('fabButton');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalClose = document.getElementById('modalClose');
+        const cancelButton = document.getElementById('cancelButton');
+        const confirmButton = document.getElementById('confirmButton');
+        const urlInput = document.getElementById('urlInput');
+        const successMessage = document.getElementById('successMessage');
+        const detailScreen = document.getElementById('detailScreen');
+        const backButton = document.getElementById('backButton');
+
+        let currentUser = null;
+
+        window.onTelegramAuth = async function(user) {
+            try {
+                const timestamp = new Date().toISOString();
+                const userData = {
+                    id: user.id,
+                    first_name: user.first_name || "",
+                    last_name: user.last_name || "",
+                    username: user.username || null,
+                    photo_url: user.photo_url || null,
+                    auth_date: user.auth_date,
+                    hash: user.hash,
+                    timestamp: timestamp,
+                    last_login: timestamp
+                };
+
+                await set(ref(database, 'usuarios/' + user.id), userData);
+                await setDoc(
+                    doc(db, "usuarios", String(user.id)),
+                    userData,
+                    { merge: true }
+                );
+
+                currentUser = userData;
+                loginOverlay.classList.add('hidden');
+                loadUrls();
+
+            } catch (err) {
+                console.error("Error al guardar:", err);
+                alert("Error al iniciar sesión. Por favor intenta de nuevo.");
+            }
+        }
+
+        searchInput.addEventListener('focus', () => {
+            tabs.classList.add('active');
+            chatList.classList.add('with-tabs');
+        });
+
+        searchInput.addEventListener('blur', () => {
+            setTimeout(() => {
+                tabs.classList.remove('active');
+                chatList.classList.remove('with-tabs');
+            }, 200);
+        });
+
+        fabButton.addEventListener('click', () => {
+            modalOverlay.classList.add('active');
+            setTimeout(() => urlInput.focus(), 100);
+        });
+
+        modalClose.addEventListener('click', closeModal);
+        cancelButton.addEventListener('click', closeModal);
         
-        <div class="info-section">
-          <h4>📋 Información Personal</h4>
-          <div class="info-row">
-            <span class="info-label">ID de Telegram</span>
-            <span class="info-value">${user.id}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Nombre</span>
-            <span class="info-value">${user.first_name}</span>
-          </div>
-          ${user.last_name ? `
-          <div class="info-row">
-            <span class="info-label">Apellido</span>
-            <span class="info-value">${user.last_name}</span>
-          </div>
-          ` : ''}
-          <div class="info-row">
-            <span class="info-label">Username</span>
-            <span class="info-value">${user.username ? '@' + user.username : 'No disponible'}</span>
-          </div>
-          ${user.photo_url ? `
-          <div class="info-row">
-            <span class="info-label">Foto de perfil</span>
-            <span class="info-value">✅ Disponible</span>
-          </div>
-          ` : ''}
-        </div>
-        
-        <div class="info-section">
-          <h4>🔐 Datos de Autenticación</h4>
-          <div class="info-row">
-            <span class="info-label">Fecha de auth</span>
-            <span class="info-value">${formatDate(user.auth_date)}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Timestamp</span>
-            <span class="info-value">${formatTimestamp(timestamp)}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Hash</span>
-            <span class="info-value">${user.hash.substring(0, 16)}...</span>
-          </div>
-        </div>
-        
-        <div class="info-section">
-          <h4>💾 Estado de Almacenamiento</h4>
-          <div class="info-row">
-            <span class="info-label">Firebase Database</span>
-            <span class="info-value" style="color:#16a34a;">✅ Guardado</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Firestore</span>
-            <span class="info-value" style="color:#16a34a;">✅ Guardado</span>
-          </div>
-        </div>
-        
-        <div class="status-badge">
-          <span>✅</span>
-          <span>Sesión iniciada correctamente</span>
-        </div>
-      `;
-      
-      userInfo.style.display = "block";
-      
-    } catch (err) {
-      loading.style.display = "none";
-      error.style.display = "block";
-      error.innerHTML = `<strong>❌ Error al guardar:</strong><br>${err.message}`;
-      console.error("Error completo:", err);
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
+        });
+
+        backButton.addEventListener('click', () => {
+            detailScreen.classList.remove('active');
+            chatList.classList.remove('hidden');
+        });
+
+        confirmButton.addEventListener('click', async () => {
+            const url = urlInput.value.trim();
+            
+            if (url) {
+                confirmButton.disabled = true;
+                confirmButton.textContent = 'SAVING...';
+                
+                try {
+                    await addDoc(collection(db, "telegram-urls"), {
+                        url: url,
+                        timestamp: serverTimestamp(),
+                        userId: currentUser?.id || null
+                    });
+                    
+                    showSuccessMessage();
+                    closeModal();
+                } catch (error) {
+                    console.error("Error:", error);
+                    alert("Error saving URL. Please try again.");
+                } finally {
+                    confirmButton.disabled = false;
+                    confirmButton.textContent = 'OPEN';
+                }
+            }
+        });
+
+        function closeModal() {
+            modalOverlay.classList.remove('active');
+            urlInput.value = '';
+        }
+
+        function showSuccessMessage() {
+            successMessage.classList.add('show');
+            setTimeout(() => successMessage.classList.remove('show'), 3000);
+        }
+
+        urlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') confirmButton.click();
+        });
+
+        function loadUrls() {
+            const fbQuery = query(collection(db, "telegram-urls"), orderBy("timestamp", "desc"));
+            onSnapshot(fbQuery, (snapshot) => {
+                chatList.innerHTML = '';
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    createChatItem(data.url, doc.id, data.timestamp);
+                });
+            });
+        }
+
+        function createChatItem(url, docId, timestamp) {
+            const chatItem = document.createElement('div');
+            chatItem.className = 'chat-item';
+            
+            let timeString = '';
+            if (timestamp && timestamp.toDate) {
+                const date = timestamp.toDate();
+                timeString = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+            } else {
+                timeString = 'Now';
+            }
+            
+            chatItem.innerHTML = `
+                <div class="avatar">
+                    <span style="font-size: 24px;">T</span>
+                </div>
+                <div class="chat-content">
+                    <div class="chat-header">
+                        <span class="chat-name">Loading...</span>
+                    </div>
+                    <div class="chat-message">${url}</div>
+                </div>
+                <div class="chat-right">
+                    <span class="chat-time">${timeString}</span>
+                    <span class="loading-badge">LOADING</span>
+                </div>
+            `;
+            chatList.appendChild(chatItem);
+
+            scrapeUrl(url, chatItem, docId);
+        }
+
+        async function scrapeUrl(url, chatItem, docId) {
+            try {
+                const proxy = "https://api.allorigins.win/raw?url=";
+                const res = await fetch(proxy + encodeURIComponent(url));
+                if (!res.ok) throw new Error("Failed to load page");
+                
+                const html = await res.text();
+                const doc = new DOMParser().parseFromString(html, "text/html");
+                
+                const data = {
+                    nombre: q(doc, ".tgme_page_title span") || q(doc, ".tgme_page_title") || meta(doc, "og:title"),
+                    suscriptores: cleanSubscribers(q(doc, ".tgme_page_extra")),
+                    username: extractUsername(url),descripcion: clean(q(doc, ".tgme_page_description") || meta(doc, "og:description") || meta(doc, "description")),
+                foto: q(doc, ".tgme_page_photo_image", "src") || meta(doc, "og:image"),
+                verificado: !!doc.querySelector(".verified-icon"),
+                enlaceGrupo: url
+            };
+
+            const avatar = chatItem.querySelector('.avatar');
+            const nameEl = chatItem.querySelector('.chat-name');
+            const messageEl = chatItem.querySelector('.chat-message');
+            const badge = chatItem.querySelector('.loading-badge');
+
+            if (data.foto) {
+                avatar.innerHTML = `<img src="${data.foto}" alt="${data.nombre}">`;
+            } else if (data.nombre) {
+                avatar.innerHTML = `<span style="font-size: 24px;">${data.nombre.charAt(0).toUpperCase()}</span>`;
+            }
+
+            nameEl.textContent = data.nombre || 'Unknown';
+            if (data.verificado) {
+                nameEl.innerHTML += ' <span class="material-icons verified-badge" style="font-size: 16px; vertical-align: middle;">verified</span>';
+            }
+            
+            messageEl.textContent = data.descripcion || data.suscriptores || url;
+            badge.textContent = 'OPEN';
+            badge.className = 'open-badge';
+
+            chatItem.addEventListener('click', () => showDetails(data));
+
+        } catch (error) {
+            console.error("Error:", error);
+            const badge = chatItem.querySelector('.loading-badge');
+            if (badge) {
+                badge.textContent = 'ERROR';
+                badge.style.background = '#F44336';
+            }
+        }
     }
-  }
+
+    function showDetails(data) {
+        chatList.classList.add('hidden');
+        detailScreen.classList.add('active');
+
+        const isBot = data.nombre?.toLowerCase().includes('bot') || data.username?.toLowerCase().includes('bot');
+        const isGroup = data.suscriptores?.toLowerCase().includes('members') && !data.suscriptores?.toLowerCase().includes('subscribers');
+
+        document.getElementById('detailHeaderTitle').textContent = data.nombre || 'Info';
+        document.getElementById('detailName').textContent = data.nombre || 'Unknown';
+        document.getElementById('detailUsername').textContent = data.username || '';
+        document.getElementById('detailUsername').style.display = data.username ? 'block' : 'none';
+        
+        const subscribersEl = document.getElementById('detailSubscribers');
+        const subscribersTextEl = document.getElementById('detailSubscribersText');
+        const onlineEl = document.getElementById('detailOnline');
+        const onlineTextEl = document.getElementById('detailOnlineText');
+        
+        if (isBot) {
+            subscribersEl.style.display = 'none';
+        } else if (data.suscriptores) {
+            const subsText = data.suscriptores.replace(/\s+/g, ' ').replace(/\u00A0/g, ' ').trim();
+            
+            const parts = subsText.split(',');
+            if (parts.length === 2) {
+                subscribersTextEl.textContent = parts[0].trim();
+                subscribersEl.style.display = 'flex';
+                onlineTextEl.textContent = parts[1].trim();
+                onlineEl.style.display = 'flex';
+            } else {
+                subscribersTextEl.textContent = subsText;
+                subscribersEl.style.display = 'flex';
+                onlineEl.style.display = 'none';
+            }
+        } else {
+            subscribersEl.style.display = 'none';
+        }
+
+        document.getElementById('detailDescription').textContent = data.descripcion || 'No description available';
+        document.getElementById('detailVerified').style.display = data.verificado ? 'inline-block' : 'none';
+
+        const banner = document.getElementById('detailBanner');
+        if (data.foto) {
+            banner.innerHTML = `<img src="${data.foto}" alt="${data.nombre}">`;
+        } else {
+            banner.innerHTML = '<span class="material-icons" style="font-size: 64px; color: rgba(255,255,255,0.3);">telegram</span>';
+        }
+
+        const avatar = document.getElementById('detailAvatar');
+        if (data.foto) {
+            avatar.innerHTML = `<img src="${data.foto}" alt="${data.nombre}">`;
+        } else if (data.nombre) {
+            avatar.innerHTML = `<span style="font-size: 32px;">${data.nombre.charAt(0).toUpperCase()}</span>`;
+        }
+
+        const openBtn = document.getElementById('openChannelButton');
+        openBtn.onclick = () => window.open(data.enlaceGrupo, '_blank');
+        
+        if (isBot) {
+            openBtn.innerHTML = '<span class="material-icons" style="font-size: 20px;">open_in_new</span> Open Bot';
+        } else if (isGroup) {
+            openBtn.innerHTML = '<span class="material-icons" style="font-size: 20px;">open_in_new</span> Open Group';
+        } else {
+            openBtn.innerHTML = '<span class="material-icons" style="font-size: 20px;">open_in_new</span> Open Channel';
+        }
+    }
+
+    const q = (doc, sel, attr) => {
+        const el = doc.querySelector(sel);
+        return attr ? el?.getAttribute(attr) : el?.textContent?.trim() || null;
+    };
+
+    const meta = (doc, name) =>
+        doc.querySelector(`meta[property="${name}"], meta[name="${name}"]`)?.content?.trim() || null;
+
+    const clean = t => t ? t.replace(/\s+/g, " ").trim() : null;
+
+    const cleanSubscribers = t => {
+        if (!t) return null;
+        let cleaned = t.replace(/\u00A0/g, "").trim();
+        cleaned = cleaned.replace(/(\d)\s+(\d)/g, "$1$2");
+        cleaned = cleaned.replace(/(\d)([a-zA-Z])/g, "$1 $2");
+        return cleaned;
+    };
+
+    function extractUsername(url) {
+        const m = url.match(/t\.me\/([^/?]+)/);
+        return m ? "@" + m[1] : null;
+    }
 </script>
-</body>
-</html>
