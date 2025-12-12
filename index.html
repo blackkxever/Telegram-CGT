@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#E6E8EA">
     <title>Telegram Search</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -298,11 +297,10 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 20px 20px 16px 20px;
-            border-bottom: 1px solid #E4E4E4;
+            padding: 24px 24px 20px 24px;
         }
         .modal-title {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 600;
             color: #202124;
         }
@@ -323,12 +321,12 @@
             background: #F3F4F6;
         }
         .modal-body {
-            padding: 20px;
+            padding: 0 24px 20px 24px;
         }
         .modal-description {
             font-size: 15px;
             color: #5F6368;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             line-height: 1.5;
         }
         .modal-input-container {
@@ -339,6 +337,7 @@
             padding: 12px 16px;
             border: 2px solid transparent;
             transition: all 0.3s ease;
+            margin-bottom: 16px;
         }
         .modal-input-container:focus-within {
             border-color: #3290EC;
@@ -360,7 +359,7 @@
             display: flex;
             justify-content: flex-end;
             gap: 12px;
-            padding: 16px 20px 20px 20px;
+            padding: 0 24px 24px 24px;
         }
         .modal-button {
             padding: 10px 24px;
@@ -410,6 +409,15 @@
         .success-message.show {
             opacity: 1;
             visibility: visible;
+        }
+        .error-message {
+            color: #F44336;
+            font-size: 13px;
+            margin-top: 8px;
+            display: none;
+        }
+        .error-message.show {
+            display: block;
         }
         .detail-screen {
             position: fixed;
@@ -578,6 +586,21 @@
             background: #E4E4E4;
             margin: 20px 0;
         }
+        .text-link {
+            color: #3290EC;
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        .text-link:hover {
+            color: #2B83D8;
+        }
+        .auth-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
@@ -607,7 +630,29 @@
         <span class="material-icons fab-icon">add</span>
     </button>
 
-    <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-overlay active" id="authModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="authTitle">Sign In</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-description" id="authDescription">Please enter your email and password to continue</p>
+                <div class="modal-input-container">
+                    <input type="email" class="modal-input" id="emailInput" placeholder="Email">
+                </div>
+                <div class="modal-input-container">
+                    <input type="password" class="modal-input" id="passwordInput" placeholder="Password">
+                </div>
+                <div class="error-message" id="authError">Error signing in</div>
+            </div>
+            <div class="modal-footer auth-footer">
+                <span class="text-link" id="toggleAuthMode">Create Account</span>
+                <button class="modal-button confirm" id="authButton">SIGN IN</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="urlModal">
         <div class="modal">
             <div class="modal-header">
                 <h2 class="modal-title">Enter Link</h2>
@@ -635,7 +680,7 @@
             </button>
             <span class="detail-header-title" id="detailHeaderTitle">Channel Info</span>
         </div>
-        <div class="detail-content" id="detailContent">
+        <div class="detail-content">
             <div class="detail-banner" id="detailBanner">
                 <span class="material-icons" style="font-size: 64px; color: rgba(255,255,255,0.3);">telegram</span>
             </div>
@@ -674,25 +719,25 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        const firebaseConfig = {
+        const app = initializeApp({
             apiKey: "AIzaSyB7B5c4FvtJbAn9Vrr2pMrfBb5ufTW3JHU",
             authDomain: "telegram-cgt.firebaseapp.com",
             projectId: "telegram-cgt",
             storageBucket: "telegram-cgt.firebasestorage.app",
             messagingSenderId: "815818658380",
-            appId: "1:815818658380:web:e164fc9456157111551ae9",
-            measurementId: "G-0T4DKXFJ9E"
-        };
+            appId: "1:815818658380:web:e164fc9456157111551ae9"
+        });
 
-        const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
+        const auth = getAuth(app);
         const searchInput = document.querySelector('.search-input');
         const tabs = document.querySelector('.tabs');
         const chatList = document.getElementById('chatList');
         const fabButton = document.getElementById('fabButton');
-        const modalOverlay = document.getElementById('modalOverlay');
+        const authModal = document.getElementById('authModal');
+        const urlModal = document.getElementById('urlModal');
         const modalClose = document.getElementById('modalClose');
         const cancelButton = document.getElementById('cancelButton');
         const confirmButton = document.getElementById('confirmButton');
@@ -700,6 +745,82 @@
         const successMessage = document.getElementById('successMessage');
         const detailScreen = document.getElementById('detailScreen');
         const backButton = document.getElementById('backButton');
+        const authButton = document.getElementById('authButton');
+        const emailInput = document.getElementById('emailInput');
+        const passwordInput = document.getElementById('passwordInput');
+        const authError = document.getElementById('authError');
+        const authTitle = document.getElementById('authTitle');
+        const authDescription = document.getElementById('authDescription');
+        const toggleAuthMode = document.getElementById('toggleAuthMode');
+
+        let isSignInMode = true;
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                authModal.classList.remove('active');
+                loadChats();
+            } else {
+                authModal.classList.add('active');
+            }
+        });
+
+        toggleAuthMode.addEventListener('click', () => {
+            isSignInMode = !isSignInMode;
+            if (isSignInMode) {
+                authTitle.textContent = 'Sign In';
+                authDescription.textContent = 'Please enter your email and password to continue';
+                authButton.textContent = 'SIGN IN';
+                toggleAuthMode.textContent = 'Create Account';
+            } else {
+                authTitle.textContent = 'Create Account';
+                authDescription.textContent = 'Enter your email and password to create a new account';
+                authButton.textContent = 'CREATE ACCOUNT';
+                toggleAuthMode.textContent = 'Sign In';
+            }
+            authError.classList.remove('show');
+            emailInput.value = '';
+            passwordInput.value = '';
+        });
+
+        authButton.addEventListener('click', async () => {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+            
+            if (!email || !password) {
+                authError.textContent = 'Please fill in all fields';
+                authError.classList.add('show');
+                return;
+            }
+
+            authButton.disabled = true;
+            authButton.textContent = isSignInMode ? 'SIGNING IN...' : 'CREATING...';
+            authError.classList.remove('show');
+
+            try {
+                if (isSignInMode) {
+                    await signInWithEmailAndPassword(auth, email, password);
+                } else {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                }
+            } catch (error) {
+                let errorMsg = 'Error processing request';
+                if (error.code === 'auth/invalid-email') errorMsg = 'Invalid email address';
+                else if (error.code === 'auth/user-not-found') errorMsg = 'User not found';
+                else if (error.code === 'auth/wrong-password') errorMsg = 'Incorrect password';
+                else if (error.code === 'auth/invalid-credential') errorMsg = 'Invalid credentials';
+                else if (error.code === 'auth/email-already-in-use') errorMsg = 'Email already in use';
+                else if (error.code === 'auth/weak-password') errorMsg = 'Password should be at least 6 characters';
+                
+                authError.textContent = errorMsg;
+                authError.classList.add('show');
+                authButton.disabled = false;
+                authButton.textContent = isSignInMode ? 'SIGN IN' : 'CREATE ACCOUNT';
+            }
+        });
+
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') authButton.click();
+        });
 
         searchInput.addEventListener('focus', () => {
             tabs.classList.add('active');
@@ -714,15 +835,14 @@
         });
 
         fabButton.addEventListener('click', () => {
-            modalOverlay.classList.add('active');
+            urlModal.classList.add('active');
             setTimeout(() => urlInput.focus(), 100);
         });
 
-        modalClose.addEventListener('click', closeModal);
-        cancelButton.addEventListener('click', closeModal);
-        
-        modalOverlay.addEventListener('click', (e) => {
-            if (e.target === modalOverlay) closeModal();
+        modalClose.addEventListener('click', closeUrlModal);
+        cancelButton.addEventListener('click', closeUrlModal);
+        urlModal.addEventListener('click', (e) => {
+            if (e.target === urlModal) closeUrlModal();
         });
 
         backButton.addEventListener('click', () => {
@@ -732,31 +852,29 @@
 
         confirmButton.addEventListener('click', async () => {
             const url = urlInput.value.trim();
+            if (!url) return;
             
-            if (url) {
-                confirmButton.disabled = true;
-                confirmButton.textContent = 'SAVING...';
-                
-                try {
-                    await addDoc(collection(db, "telegram-urls"), {
-                        url: url,
-                        timestamp: serverTimestamp()
-                    });
-                    
-                    showSuccessMessage();
-                    closeModal();
-                } catch (error) {
-                    console.error("Error:", error);
-                    alert("Error saving URL. Please try again.");
-                } finally {
-                    confirmButton.disabled = false;
-                    confirmButton.textContent = 'OPEN';
-                }
+            confirmButton.disabled = true;
+            confirmButton.textContent = 'SAVING...';
+            
+            try {
+                await addDoc(collection(db, "telegram-urls"), {
+                    url: url,
+                    timestamp: serverTimestamp()
+                });
+                showSuccessMessage();
+                closeUrlModal();
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error saving URL. Please try again.");
+            } finally {
+                confirmButton.disabled = false;
+                confirmButton.textContent = 'OPEN';
             }
         });
 
-        function closeModal() {
-            modalOverlay.classList.remove('active');
+        function closeUrlModal() {
+            urlModal.classList.remove('active');
             urlInput.value = '';
         }
 
@@ -769,31 +887,44 @@
             if (e.key === 'Enter') confirmButton.click();
         });
 
-        const fbQuery = query(collection(db, "telegram-urls"), orderBy("timestamp", "desc"));
-        onSnapshot(fbQuery, (snapshot) => {
-            chatList.innerHTML = '';
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                createChatItem(data.url, doc.id, data.timestamp);
+        function formatTelegramTime(timestamp) {
+            if (!timestamp || !timestamp.toDate) return 'now';
+            
+            const now = new Date();
+            const date = timestamp.toDate();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+            
+            if (diffMins < 1) return 'now';
+            if (diffMins < 60) return `${diffMins}m`;
+            if (diffHours < 24) return `${diffHours}h`;
+            if (diffDays < 7) return `${diffDays}d`;
+            
+            const day = date.getDate();
+            const month = date.toLocaleString('en', { month: 'short' });
+            return `${day} ${month}`;
+        }
+
+        function loadChats() {
+            const fbQuery = query(collection(db, "telegram-urls"), orderBy("timestamp", "desc"));
+            onSnapshot(fbQuery, (snapshot) => {
+                chatList.innerHTML = '';
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    createChatItem(data.url, doc.id, data.timestamp);
+                });
             });
-        });
+        }
 
         function createChatItem(url, docId, timestamp) {
             const chatItem = document.createElement('div');
             chatItem.className = 'chat-item';
-            
-            let timeString = '';
-            if (timestamp && timestamp.toDate) {
-                const date = timestamp.toDate();
-                timeString = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-            } else {
-                timeString = 'Now';
-            }
+            const timeString = formatTelegramTime(timestamp);
             
             chatItem.innerHTML = `
-                <div class="avatar">
-                    <span style="font-size: 24px;">T</span>
-                </div>
+                <div class="avatar"><span style="font-size: 24px;">T</span></div>
                 <div class="chat-content">
                     <div class="chat-header">
                         <span class="chat-name">Loading...</span>
@@ -806,7 +937,6 @@
                 </div>
             `;
             chatList.appendChild(chatItem);
-
             scrapeUrl(url, chatItem, docId);
         }
 
@@ -848,7 +978,6 @@
                 messageEl.textContent = data.descripcion || data.suscriptores || url;
                 badge.textContent = 'OPEN';
                 badge.className = 'open-badge';
-
                 chatItem.addEventListener('click', () => showDetails(data));
 
             } catch (error) {
@@ -882,7 +1011,6 @@
                 subscribersEl.style.display = 'none';
             } else if (data.suscriptores) {
                 const subsText = data.suscriptores.replace(/\s+/g, ' ').replace(/\u00A0/g, ' ').trim();
-                
                 const parts = subsText.split(',');
                 if (parts.length === 2) {
                     subscribersTextEl.textContent = parts[0].trim();
@@ -932,11 +1060,8 @@
             return attr ? el?.getAttribute(attr) : el?.textContent?.trim() || null;
         };
 
-        const meta = (doc, name) =>
-            doc.querySelector(`meta[property="${name}"], meta[name="${name}"]`)?.content?.trim() || null;
-
+        const meta = (doc, name) => doc.querySelector(`meta[property="${name}"], meta[name="${name}"]`)?.content?.trim() || null;
         const clean = t => t ? t.replace(/\s+/g, " ").trim() : null;
-
         const cleanSubscribers = t => {
             if (!t) return null;
             let cleaned = t.replace(/\u00A0/g, "").trim();
@@ -949,6 +1074,13 @@
             const m = url.match(/t\.me\/([^/?]+)/);
             return m ? "@" + m[1] : null;
         }
+
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
     </script>
 </body>
 </html>
