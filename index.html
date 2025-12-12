@@ -8,14 +8,16 @@
     body { 
       font-family: system-ui, sans-serif; 
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      height: 100vh; 
+      min-height: 100vh; 
       margin: 0; 
       display: flex; 
       justify-content: center; 
-      align-items: center; 
+      align-items: center;
+      padding: 20px;
     }
     .card { 
-      width: 360px; 
+      width: 100%;
+      max-width: 500px; 
       background: white; 
       border-radius: 16px; 
       padding: 32px; 
@@ -31,28 +33,114 @@
       font-size: 14px;
       margin-bottom: 24px;
     }
-    #info { 
-      display: none; 
-      padding: 16px; 
-      background: #f1f5f9; 
-      border-radius: 12px; 
-      margin-top: 20px; 
-      font-size: 14px; 
-      text-align: left;
-      border-left: 4px solid #3b82f6;
-    }
     .telegram-widget {
       margin: 20px 0;
     }
-    .error {
-      background: #fee2e2;
-      border-left-color: #ef4444;
-      color: #991b1b;
+    #userInfo { 
+      display: none; 
+      text-align: left;
+      margin-top: 24px;
     }
-    .success {
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      color: white;
+      margin-bottom: 20px;
+    }
+    .profile-photo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid white;
+      object-fit: cover;
+    }
+    .profile-photo-placeholder {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid white;
+      background: rgba(255,255,255,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+    }
+    .profile-name {
+      flex: 1;
+    }
+    .profile-name h3 {
+      margin: 0 0 4px;
+      font-size: 24px;
+    }
+    .profile-name p {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    .info-section {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .info-section h4 {
+      margin: 0 0 16px;
+      color: #1e293b;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .info-row:last-child {
+      border-bottom: none;
+    }
+    .info-label {
+      color: #64748b;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .info-value {
+      color: #1e293b;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: right;
+      word-break: break-all;
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
       background: #dcfce7;
-      border-left-color: #22c55e;
       color: #166534;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 16px;
+    }
+    .loading {
+      padding: 16px;
+      background: #f1f5f9;
+      border-radius: 12px;
+      margin-top: 20px;
+      color: #64748b;
+    }
+    .error {
+      padding: 16px;
+      background: #fee2e2;
+      border-radius: 12px;
+      margin-top: 20px;
+      color: #991b1b;
     }
   </style>
 </head>
@@ -72,18 +160,26 @@
     </script>
   </div>
   
-  <div id="info"></div>
+  <div id="loading" class="loading" style="display:none;">
+    ⏳ Guardando datos en Firebase...
+  </div>
+  
+  <div id="error" class="error" style="display:none;"></div>
+  
+  <div id="userInfo"></div>
 </div>
 
 <!-- FIREBASE -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
   import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
   
   const firebaseConfig = {
     apiKey: "AIzaSyB7B5c4FvtJbAn9Vrr2pMrfBb5ufTW3JHU",
     authDomain: "telegram-cgt.firebaseapp.com",
     projectId: "telegram-cgt",
+    databaseURL: "https://telegram-cgt-default-rtdb.firebaseio.com",
     storageBucket: "telegram-cgt.firebasestorage.app",
     messagingSenderId: "815818658380",
     appId: "1:815818658380:web:e164fc9456157111551ae9",
@@ -91,41 +187,152 @@
   };
   
   const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+  const database = getDatabase(app);
+  const firestore = getFirestore(app);
+  
+  function formatDate(timestamp) {
+    const date = new Date(timestamp * 1000);
+    return date.toLocaleString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+  
+  function formatTimestamp(isoString) {
+    const date = new Date(isoString);
+    return date.toLocaleString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  }
   
   window.onTelegramAuth = async function(user) {
-    const info = document.getElementById("info");
-    info.style.display = "block";
-    info.className = "";
-    info.innerHTML = "⏳ Guardando datos en Firebase...";
+    const loading = document.getElementById("loading");
+    const error = document.getElementById("error");
+    const userInfo = document.getElementById("userInfo");
+    const widget = document.querySelector(".telegram-widget");
+    
+    loading.style.display = "block";
+    error.style.display = "none";
+    userInfo.style.display = "none";
     
     try {
+      const timestamp = new Date().toISOString();
+      const userData = {
+        id: user.id,
+        first_name: user.first_name || "",
+        last_name: user.last_name || "",
+        username: user.username || null,
+        photo_url: user.photo_url || null,
+        auth_date: user.auth_date,
+        hash: user.hash,
+        timestamp: timestamp,
+        last_login: timestamp
+      };
+      
+      // Guardar en Realtime Database
+      await set(ref(database, 'usuarios/' + user.id), userData);
+      
+      // Guardar también en Firestore
       await setDoc(
-        doc(db, "usuarios", String(user.id)),
-        {
-          id: user.id,
-          first_name: user.first_name || "",
-          last_name: user.last_name || "",
-          username: user.username || null,
-          photo_url: user.photo_url || null,
-          auth_date: user.auth_date,
-          hash: user.hash,
-          timestamp: new Date().toISOString()
-        },
+        doc(firestore, "usuarios", String(user.id)),
+        userData,
         { merge: true }
       );
       
-      info.className = "success";
-      info.innerHTML = `
-        <strong>✅ Sesión iniciada correctamente</strong><br><br>
-        <strong>Nombre:</strong> ${user.first_name} ${user.last_name || ""}<br>
-        <strong>Username:</strong> @${user.username || "(sin username)"}<br>
-        <strong>ID:</strong> ${user.id}<br><br>
-        <span style="color:#16a34a"><b>Datos guardados en Firebase</b></span>
+      // Ocultar widget y loading
+      widget.style.display = "none";
+      loading.style.display = "none";
+      
+      // Mostrar información del usuario
+      const photoHtml = user.photo_url 
+        ? `<img src="${user.photo_url}" alt="Foto de perfil" class="profile-photo">`
+        : `<div class="profile-photo-placeholder">${user.first_name.charAt(0).toUpperCase()}</div>`;
+      
+      userInfo.innerHTML = `
+        <div class="profile-header">
+          ${photoHtml}
+          <div class="profile-name">
+            <h3>${user.first_name} ${user.last_name || ""}</h3>
+            <p>${user.username ? '@' + user.username : 'Sin username'}</p>
+          </div>
+        </div>
+        
+        <div class="info-section">
+          <h4>📋 Información Personal</h4>
+          <div class="info-row">
+            <span class="info-label">ID de Telegram</span>
+            <span class="info-value">${user.id}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Nombre</span>
+            <span class="info-value">${user.first_name}</span>
+          </div>
+          ${user.last_name ? `
+          <div class="info-row">
+            <span class="info-label">Apellido</span>
+            <span class="info-value">${user.last_name}</span>
+          </div>
+          ` : ''}
+          <div class="info-row">
+            <span class="info-label">Username</span>
+            <span class="info-value">${user.username ? '@' + user.username : 'No disponible'}</span>
+          </div>
+          ${user.photo_url ? `
+          <div class="info-row">
+            <span class="info-label">Foto de perfil</span>
+            <span class="info-value">✅ Disponible</span>
+          </div>
+          ` : ''}
+        </div>
+        
+        <div class="info-section">
+          <h4>🔐 Datos de Autenticación</h4>
+          <div class="info-row">
+            <span class="info-label">Fecha de auth</span>
+            <span class="info-value">${formatDate(user.auth_date)}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Timestamp</span>
+            <span class="info-value">${formatTimestamp(timestamp)}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Hash</span>
+            <span class="info-value">${user.hash.substring(0, 16)}...</span>
+          </div>
+        </div>
+        
+        <div class="info-section">
+          <h4>💾 Estado de Almacenamiento</h4>
+          <div class="info-row">
+            <span class="info-label">Firebase Database</span>
+            <span class="info-value" style="color:#16a34a;">✅ Guardado</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Firestore</span>
+            <span class="info-value" style="color:#16a34a;">✅ Guardado</span>
+          </div>
+        </div>
+        
+        <div class="status-badge">
+          <span>✅</span>
+          <span>Sesión iniciada correctamente</span>
+        </div>
       `;
+      
+      userInfo.style.display = "block";
+      
     } catch (err) {
-      info.className = "error";
-      info.innerHTML = `<strong>❌ Error al guardar:</strong><br>${err.message}`;
+      loading.style.display = "none";
+      error.style.display = "block";
+      error.innerHTML = `<strong>❌ Error al guardar:</strong><br>${err.message}`;
       console.error("Error completo:", err);
     }
   }
