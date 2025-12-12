@@ -577,65 +577,9 @@
             background: #E4E4E4;
             margin: 20px 0;
         }
-        .login-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            padding: 20px;
-        }
-        .login-overlay.hidden {
-            display: none;
-        }
-        .login-card {
-            width: 100%;
-            max-width: 500px;
-            background: white;
-            border-radius: 16px;
-            padding: 32px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            text-align: center;
-        }
-        .login-card h2 {
-            margin: 0 0 8px;
-            color: #1e293b;
-        }
-        .login-subtitle {
-            color: #64748b;
-            font-size: 14px;
-            margin-bottom: 24px;
-        }
-        .telegram-widget {
-            margin: 20px 0;
-            display: flex;
-            justify-content: center;
-        }
     </style>
 </head>
 <body>
-    <div class="login-overlay" id="loginOverlay">
-        <div class="login-card">
-            <h2>🔐 Login con Telegram</h2>
-            <p class="login-subtitle">Inicia sesión de forma segura para continuar</p>
-            
-            <div class="telegram-widget">
-                <script async src="https://telegram.org/js/telegram-widget.js?22"
-                    data-telegram-login="CGTelegram_bot"
-                    data-size="large"
-                    data-userpic="true"
-                    data-request-access="write"
-                    data-onauth="onTelegramAuth">
-                </script>
-            </div>
-        </div>
-    </div>
-
     <div class="header-container">
         <button class="menu-button">
             <span class="material-icons menu-icon">menu</span>
@@ -727,15 +671,13 @@
     <div class="success-message" id="successMessage">URL saved successfully!</div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
-        import { getFirestore, doc, setDoc, collection, addDoc, serverTimestamp, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyB7B5c4FvtJbAn9Vrr2pMrfBb5ufTW3JHU",
             authDomain: "telegram-cgt.firebaseapp.com",
             projectId: "telegram-cgt",
-            databaseURL: "https://telegram-cgt-default-rtdb.firebaseio.com",
             storageBucket: "telegram-cgt.firebasestorage.app",
             messagingSenderId: "815818658380",
             appId: "1:815818658380:web:e164fc9456157111551ae9",
@@ -743,10 +685,8 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
         const db = getFirestore(app);
 
-        const loginOverlay = document.getElementById('loginOverlay');
         const searchInput = document.querySelector('.search-input');
         const tabs = document.querySelector('.tabs');
         const chatList = document.getElementById('chatList');
@@ -759,40 +699,6 @@
         const successMessage = document.getElementById('successMessage');
         const detailScreen = document.getElementById('detailScreen');
         const backButton = document.getElementById('backButton');
-
-        let currentUser = null;
-
-        window.onTelegramAuth = async function(user) {
-            try {
-                const timestamp = new Date().toISOString();
-                const userData = {
-                    id: user.id,
-                    first_name: user.first_name || "",
-                    last_name: user.last_name || "",
-                    username: user.username || null,
-                    photo_url: user.photo_url || null,
-                    auth_date: user.auth_date,
-                    hash: user.hash,
-                    timestamp: timestamp,
-                    last_login: timestamp
-                };
-
-                await set(ref(database, 'usuarios/' + user.id), userData);
-                await setDoc(
-                    doc(db, "usuarios", String(user.id)),
-                    userData,
-                    { merge: true }
-                );
-
-                currentUser = userData;
-                loginOverlay.classList.add('hidden');
-                loadUrls();
-
-            } catch (err) {
-                console.error("Error al guardar:", err);
-                alert("Error al iniciar sesión. Por favor intenta de nuevo.");
-            }
-        }
 
         searchInput.addEventListener('focus', () => {
             tabs.classList.add('active');
@@ -833,8 +739,7 @@
                 try {
                     await addDoc(collection(db, "telegram-urls"), {
                         url: url,
-                        timestamp: serverTimestamp(),
-                        userId: currentUser?.id || null
+                        timestamp: serverTimestamp()
                     });
                     
                     showSuccessMessage();
@@ -863,16 +768,14 @@
             if (e.key === 'Enter') confirmButton.click();
         });
 
-        function loadUrls() {
-            const fbQuery = query(collection(db, "telegram-urls"), orderBy("timestamp", "desc"));
-            onSnapshot(fbQuery, (snapshot) => {
-                chatList.innerHTML = '';
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    createChatItem(data.url, doc.id, data.timestamp);
-                });
+        const fbQuery = query(collection(db, "telegram-urls"), orderBy("timestamp", "desc"));
+        onSnapshot(fbQuery, (snapshot) => {
+            chatList.innerHTML = '';
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                createChatItem(data.url, doc.id, data.timestamp);
             });
-        }
+        });
 
         function createChatItem(url, docId, timestamp) {
             const chatItem = document.createElement('div');
@@ -918,130 +821,133 @@
                 const data = {
                     nombre: q(doc, ".tgme_page_title span") || q(doc, ".tgme_page_title") || meta(doc, "og:title"),
                     suscriptores: cleanSubscribers(q(doc, ".tgme_page_extra")),
-                    username: extractUsername(url),descripcion: clean(q(doc, ".tgme_page_description") || meta(doc, "og:description") || meta(doc, "description")),
-                foto: q(doc, ".tgme_page_photo_image", "src") || meta(doc, "og:image"),
-                verificado: !!doc.querySelector(".verified-icon"),
-                enlaceGrupo: url
-            };
+                    username: extractUsername(url),
+                    descripcion: clean(q(doc, ".tgme_page_description") || meta(doc, "og:description") || meta(doc, "description")),
+                    foto: q(doc, ".tgme_page_photo_image", "src") || meta(doc, "og:image"),
+                    verificado: !!doc.querySelector(".verified-icon"),
+                    enlaceGrupo: url
+                };
 
-            const avatar = chatItem.querySelector('.avatar');
-            const nameEl = chatItem.querySelector('.chat-name');
-            const messageEl = chatItem.querySelector('.chat-message');
-            const badge = chatItem.querySelector('.loading-badge');
+                const avatar = chatItem.querySelector('.avatar');
+                const nameEl = chatItem.querySelector('.chat-name');
+                const messageEl = chatItem.querySelector('.chat-message');
+                const badge = chatItem.querySelector('.loading-badge');
 
+                if (data.foto) {
+                    avatar.innerHTML = `<img src="${data.foto}" alt="${data.nombre}">`;
+                } else if (data.nombre) {
+                    avatar.innerHTML = `<span style="font-size: 24px;">${data.nombre.charAt(0).toUpperCase()}</span>`;
+                }
+
+                nameEl.textContent = data.nombre || 'Unknown';
+                if (data.verificado) {
+                    nameEl.innerHTML += ' <span class="material-icons verified-badge" style="font-size: 16px; vertical-align: middle;">verified</span>';
+                }
+                
+                messageEl.textContent = data.descripcion || data.suscriptores || url;
+                badge.textContent = 'OPEN';
+                badge.className = 'open-badge';
+
+                chatItem.addEventListener('click', () => showDetails(data));
+
+            } catch (error) {
+                console.error("Error:", error);
+                const badge = chatItem.querySelector('.loading-badge');
+                if (badge) {
+                    badge.textContent = 'ERROR';
+                    badge.style.background = '#F44336';
+                }
+            }
+        }
+
+        function showDetails(data) {
+            chatList.classList.add('hidden');
+            detailScreen.classList.add('active');
+
+            const isBot = data.nombre?.toLowerCase().includes('bot') || data.username?.toLowerCase().includes('bot');
+            const isGroup = data.suscriptores?.toLowerCase().includes('members') && !data.suscriptores?.toLowerCase().includes('subscribers');
+
+            document.getElementById('detailHeaderTitle').textContent = data.nombre || 'Info';
+            document.getElementById('detailName').textContent = data.nombre || 'Unknown';
+            document.getElementById('detailUsername').textContent = data.username || '';
+            document.getElementById('detailUsername').style.display = data.username ? 'block' : 'none';
+            
+            const subscribersEl = document.getElementById('detailSubscribers');
+            const subscribersTextEl = document.getElementById('detailSubscribersText');
+            const onlineEl = document.getElementById('detailOnline');
+            const onlineTextEl = document.getElementById('detailOnlineText');
+            
+            if (isBot) {
+                subscribersEl.style.display = 'none';
+            } else if (data.suscriptores) {
+                const subsText = data.suscriptores.replace(/\s+/g, ' ').replace(/\u00A0/g, ' ').trim();
+                
+                const parts = subsText.split(',');
+                if (parts.length === 2) {
+                    subscribersTextEl.textContent = parts[0].trim();
+                    subscribersEl.style.display = 'flex';
+                    onlineTextEl.textContent = parts[1].trim();
+                    onlineEl.style.display = 'flex';
+                } else {
+                    subscribersTextEl.textContent = subsText;
+                    subscribersEl.style.display = 'flex';
+                    onlineEl.style.display = 'none';
+                }
+            } else {
+                subscribersEl.style.display = 'none';
+            }
+
+            document.getElementById('detailDescription').textContent = data.descripcion || 'No description available';
+            document.getElementById('detailVerified').style.display = data.verificado ? 'inline-block' : 'none';
+
+            const banner = document.getElementById('detailBanner');
+            if (data.foto) {
+                banner.innerHTML = `<img src="${data.foto}" alt="${data.nombre}">`;
+            } else {
+                banner.innerHTML = '<span class="material-icons" style="font-size: 64px; color: rgba(255,255,255,0.3);">telegram</span>';
+            }
+
+            const avatar = document.getElementById('detailAvatar');
             if (data.foto) {
                 avatar.innerHTML = `<img src="${data.foto}" alt="${data.nombre}">`;
             } else if (data.nombre) {
-                avatar.innerHTML = `<span style="font-size: 24px;">${data.nombre.charAt(0).toUpperCase()}</span>`;
+                avatar.innerHTML = `<span style="font-size: 32px;">${data.nombre.charAt(0).toUpperCase()}</span>`;
             }
 
-            nameEl.textContent = data.nombre || 'Unknown';
-            if (data.verificado) {
-                nameEl.innerHTML += ' <span class="material-icons verified-badge" style="font-size: 16px; vertical-align: middle;">verified</span>';
-            }
+            const openBtn = document.getElementById('openChannelButton');
+            openBtn.onclick = () => window.open(data.enlaceGrupo, '_blank');
             
-            messageEl.textContent = data.descripcion || data.suscriptores || url;
-            badge.textContent = 'OPEN';
-            badge.className = 'open-badge';
-
-            chatItem.addEventListener('click', () => showDetails(data));
-
-        } catch (error) {
-            console.error("Error:", error);
-            const badge = chatItem.querySelector('.loading-badge');
-            if (badge) {
-                badge.textContent = 'ERROR';
-                badge.style.background = '#F44336';
-            }
-        }
-    }
-
-    function showDetails(data) {
-        chatList.classList.add('hidden');
-        detailScreen.classList.add('active');
-
-        const isBot = data.nombre?.toLowerCase().includes('bot') || data.username?.toLowerCase().includes('bot');
-        const isGroup = data.suscriptores?.toLowerCase().includes('members') && !data.suscriptores?.toLowerCase().includes('subscribers');
-
-        document.getElementById('detailHeaderTitle').textContent = data.nombre || 'Info';
-        document.getElementById('detailName').textContent = data.nombre || 'Unknown';
-        document.getElementById('detailUsername').textContent = data.username || '';
-        document.getElementById('detailUsername').style.display = data.username ? 'block' : 'none';
-        
-        const subscribersEl = document.getElementById('detailSubscribers');
-        const subscribersTextEl = document.getElementById('detailSubscribersText');
-        const onlineEl = document.getElementById('detailOnline');
-        const onlineTextEl = document.getElementById('detailOnlineText');
-        
-        if (isBot) {
-            subscribersEl.style.display = 'none';
-        } else if (data.suscriptores) {
-            const subsText = data.suscriptores.replace(/\s+/g, ' ').replace(/\u00A0/g, ' ').trim();
-            
-            const parts = subsText.split(',');
-            if (parts.length === 2) {
-                subscribersTextEl.textContent = parts[0].trim();
-                subscribersEl.style.display = 'flex';
-                onlineTextEl.textContent = parts[1].trim();
-                onlineEl.style.display = 'flex';
+            if (isBot) {
+                openBtn.innerHTML = '<span class="material-icons" style="font-size: 20px;">open_in_new</span> Open Bot';
+            } else if (isGroup) {
+                openBtn.innerHTML = '<span class="material-icons" style="font-size: 20px;">open_in_new</span> Open Group';
             } else {
-                subscribersTextEl.textContent = subsText;
-                subscribersEl.style.display = 'flex';
-                onlineEl.style.display = 'none';
+                openBtn.innerHTML = '<span class="material-icons" style="font-size: 20px;">open_in_new</span> Open Channel';
             }
-        } else {
-            subscribersEl.style.display = 'none';
         }
 
-        document.getElementById('detailDescription').textContent = data.descripcion || 'No description available';
-        document.getElementById('detailVerified').style.display = data.verificado ? 'inline-block' : 'none';
+        const q = (doc, sel, attr) => {
+            const el = doc.querySelector(sel);
+            return attr ? el?.getAttribute(attr) : el?.textContent?.trim() || null;
+        };
 
-        const banner = document.getElementById('detailBanner');
-        if (data.foto) {
-            banner.innerHTML = `<img src="${data.foto}" alt="${data.nombre}">`;
-        } else {
-            banner.innerHTML = '<span class="material-icons" style="font-size: 64px; color: rgba(255,255,255,0.3);">telegram</span>';
+        const meta = (doc, name) =>
+            doc.querySelector(`meta[property="${name}"], meta[name="${name}"]`)?.content?.trim() || null;
+
+        const clean = t => t ? t.replace(/\s+/g, " ").trim() : null;
+
+        const cleanSubscribers = t => {
+            if (!t) return null;
+            let cleaned = t.replace(/\u00A0/g, "").trim();
+            cleaned = cleaned.replace(/(\d)\s+(\d)/g, "$1$2");
+            cleaned = cleaned.replace(/(\d)([a-zA-Z])/g, "$1 $2");
+            return cleaned;
+        };
+
+        function extractUsername(url) {
+            const m = url.match(/t\.me\/([^/?]+)/);
+            return m ? "@" + m[1] : null;
         }
-
-        const avatar = document.getElementById('detailAvatar');
-        if (data.foto) {
-            avatar.innerHTML = `<img src="${data.foto}" alt="${data.nombre}">`;
-        } else if (data.nombre) {
-            avatar.innerHTML = `<span style="font-size: 32px;">${data.nombre.charAt(0).toUpperCase()}</span>`;
-        }
-
-        const openBtn = document.getElementById('openChannelButton');
-        openBtn.onclick = () => window.open(data.enlaceGrupo, '_blank');
-        
-        if (isBot) {
-            openBtn.innerHTML = '<span class="material-icons" style="font-size: 20px;">open_in_new</span> Open Bot';
-        } else if (isGroup) {
-            openBtn.innerHTML = '<span class="material-icons" style="font-size: 20px;">open_in_new</span> Open Group';
-        } else {
-            openBtn.innerHTML = '<span class="material-icons" style="font-size: 20px;">open_in_new</span> Open Channel';
-        }
-    }
-
-    const q = (doc, sel, attr) => {
-        const el = doc.querySelector(sel);
-        return attr ? el?.getAttribute(attr) : el?.textContent?.trim() || null;
-    };
-
-    const meta = (doc, name) =>
-        doc.querySelector(`meta[property="${name}"], meta[name="${name}"]`)?.content?.trim() || null;
-
-    const clean = t => t ? t.replace(/\s+/g, " ").trim() : null;
-
-    const cleanSubscribers = t => {
-        if (!t) return null;
-        let cleaned = t.replace(/\u00A0/g, "").trim();
-        cleaned = cleaned.replace(/(\d)\s+(\d)/g, "$1$2");
-        cleaned = cleaned.replace(/(\d)([a-zA-Z])/g, "$1 $2");
-        return cleaned;
-    };
-
-    function extractUsername(url) {
-        const m = url.match(/t\.me\/([^/?]+)/);
-        return m ? "@" + m[1] : null;
-    }
-</script>
+    </script>
+</body>
+</html>
