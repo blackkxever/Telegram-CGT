@@ -2,1085 +2,206 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Telegram Search</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600&display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat IA</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            font-family: 'Google Sans', sans-serif;
-            background: #ffffff;
-            padding: 16px 20px;
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
             height: 100vh;
-            overflow-x: hidden;
-        }
-        .header-container {
             display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-        .menu-button {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
             justify-content: center;
-            border: none;
-            cursor: pointer;
-            background: transparent;
-            transition: background 0.2s ease;
-            flex-shrink: 0;
-        }
-        .menu-button:hover {
-            background: #E6E8EA;
-        }
-        .menu-icon {
-            font-size: 24px;
-            color: #6E7276;
-        }
-        .search-container {
-            flex: 1;
-        }
-        .search-box {
-            display: flex;
             align-items: center;
-            background: #F3F4F6;
-            border-radius: 100px;
-            padding: 12px 20px;
-            gap: 12px;
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
-            min-height: 48px;
-        }
-        .search-box:focus-within {
-            border-color: #3290EC;
-            background: #ffffff;
-        }
-        .search-icon {
-            color: #9A9EA2;
-            font-size: 22px;
-            flex-shrink: 0;
-        }
-        .search-input {
-            flex: 1;
-            border: none;
-            background: transparent;
-            outline: none;
-            font-size: 16px;
-            color: #000;
-            font-weight: 400;
-        }
-        .search-input::placeholder {
-            color: #A2A2A2;
-        }
-        .tabs {
-            display: flex;
-            gap: 28px;
-            border-bottom: 1px solid #E4E4E4;
-            overflow-x: auto;
-            scrollbar-width: none;
-            margin-bottom: 0;
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease, opacity 0.3s ease, margin-bottom 0.3s ease;
-        }
-        .tabs.active {
-            max-height: 100px;
-            opacity: 1;
-            margin-bottom: 0;
-        }
-        .tabs::-webkit-scrollbar {
-            display: none;
-        }
-        .tab {
-            padding-bottom: 16px;
-            font-size: 15px;
-            color: #6E7276;
-            cursor: pointer;
-            position: relative;
-            white-space: nowrap;
-            flex-shrink: 0;
-            font-weight: 500;
-            transition: color 0.2s ease;
-        }
-        .tab:hover {
-            color: #3290EC;
-        }
-        .tab.active {
-            color: #3290EC;
-            font-weight: 600;
-        }
-        .tab.active::after {
-            content: "";
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            border-radius: 10px;
-            background: #3290EC;
-        }
-        .chat-list {
-            display: flex;
-            flex-direction: column;
-            margin-top: 0;
-            transition: margin-top 0.3s ease;
-        }
-        .chat-list.with-tabs {
-            margin-top: 20px;
-        }
-        .chat-list.hidden {
-            display: none;
-        }
-        .chat-item {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 14px 0;
-            border-bottom: 1px solid #E4E4E4;
-            cursor: pointer;
-        }
-        .chat-item:hover {
-            background: #F3F4F6;
-            padding-left: 20px;
-            padding-right: 20px;
-            margin-left: -20px;
-            margin-right: -20px;
-        }
-        .avatar {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #3290EC;
-            color: white;
-            font-size: 24px;
-            font-weight: 500;
-            overflow: hidden;
-        }
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .chat-content {
-            flex: 1;
-            min-width: 0;
-        }
-        .chat-header {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 6px;
-        }
-        .chat-name {
-            font-size: 16px;
-            font-weight: 600;
-            color: #202124;
-        }
-        .verified-badge {
-            font-size: 18px;
-            color: #3290EC;
-        }
-        .chat-message {
-            font-size: 14px;
-            color: #5F6368;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            font-weight: 400;
-            line-height: 1.4;
-        }
-        .chat-right {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-        .chat-time {
-            font-size: 13px;
-            color: #9A9EA2;
-            font-weight: 500;
-        }
-        .loading-badge {
-            background: #9A9EA2;
-            color: white;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 6px 16px;
-            border-radius: 20px;
-            text-align: center;
-            letter-spacing: 0.8px;
-        }
-        .open-badge {
-            background: #3290EC;
-            color: white;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 6px 16px;
-            border-radius: 20px;
-            text-align: center;
-            letter-spacing: 0.8px;
-        }
-        .fab {
-            background: #3290EC;
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: none;
-            cursor: pointer;
-            transition: background 0.2s ease;
-            z-index: 999;
-        }
-        .fab:hover {
-            background: #2B83D8;
-        }
-        .fab-icon {
-            color: white;
-            font-size: 24px;
-        }
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000;
             padding: 20px;
         }
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-            background: rgba(0, 0, 0, 0.5);
-        }
-        .modal {
-            background: #ffffff;
-            border-radius: 16px;
+
+        .container {
+            background: white;
+            border: 1px solid #ccc;
             width: 100%;
-            max-width: 420px;
-            transform: scale(0.95) translateY(10px);
-            opacity: 0;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .modal-overlay.active .modal {
-            transform: scale(1) translateY(0);
-            opacity: 1;
-        }
-        .modal-header {
+            max-width: 800px;
+            height: 90vh;
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 24px 24px 20px 24px;
+            flex-direction: column;
         }
-        .modal-title {
-            font-size: 22px;
-            font-weight: 600;
-            color: #202124;
-        }
-        .modal-close {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: none;
-            cursor: pointer;
-            background: transparent;
-            color: #6E7276;
-            transition: background 0.2s ease;
-        }
-        .modal-close:hover {
-            background: #F3F4F6;
-        }
-        .modal-body {
-            padding: 0 24px 20px 24px;
-        }
-        .modal-description {
-            font-size: 15px;
-            color: #5F6368;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-        .modal-input-container {
-            display: flex;
-            align-items: center;
-            background: #F3F4F6;
-            border-radius: 8px;
-            padding: 12px 16px;
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
-            margin-bottom: 16px;
-        }
-        .modal-input-container:focus-within {
-            border-color: #3290EC;
-            background: #ffffff;
-        }
-        .modal-input {
-            flex: 1;
-            border: none;
-            background: transparent;
-            outline: none;
-            font-size: 16px;
-            color: #000;
-            font-weight: 400;
-        }
-        .modal-input::placeholder {
-            color: #A2A2A2;
-        }
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            padding: 0 24px 24px 24px;
-        }
-        .modal-button {
-            padding: 10px 24px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s ease;
-            letter-spacing: 0.5px;
-        }
-        .modal-button.cancel {
-            background: transparent;
-            color: #6E7276;
-        }
-        .modal-button.cancel:hover {
-            background: #F3F4F6;
-        }
-        .modal-button.confirm {
-            background: #3290EC;
+
+        .header {
+            background: #333;
             color: white;
-        }
-        .modal-button.confirm:hover {
-            background: #2B83D8;
-        }
-        .modal-button.confirm:disabled {
-            background: #9A9EA2;
-            cursor: not-allowed;
-        }
-        .success-message {
-            position: fixed;
-            bottom: 90px;
-            left: 20px;
-            right: 20px;
-            background: #4CAF50;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
+            padding: 15px;
             text-align: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-            z-index: 1001;
         }
-        .success-message.show {
-            opacity: 1;
-            visibility: visible;
-        }
-        .error-message {
-            color: #F44336;
-            font-size: 13px;
-            margin-top: 8px;
-            display: none;
-        }
-        .error-message.show {
-            display: block;
-        }
-        .detail-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background: #ffffff;
-            z-index: 2000;
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-            overflow-y: auto;
-        }
-        .detail-screen.active {
-            transform: translateX(0);
-        }
-        .detail-header {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 12px 20px;
-            position: sticky;
-            top: 0;
-            background: #ffffff;
-            z-index: 10;
-        }
-        .back-button {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: none;
-            cursor: pointer;
-            background: transparent;
-            transition: background 0.2s ease;
-            flex-shrink: 0;
-        }
-        .back-button:hover {
-            background: #E6E8EA;
-        }
-        .back-icon {
-            font-size: 24px;
-            color: #6E7276;
-        }
-        .detail-header-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #202124;
+
+        .chat-box {
             flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #fafafa;
         }
-        .detail-content {
-            padding: 0;
-        }
-        .detail-banner {
-            width: 100%;
-            height: 200px;
-            background: linear-gradient(135deg, #3290EC 0%, #2B83D8 100%);
+
+        .message {
+            margin-bottom: 15px;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
         }
-        .detail-banner img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+
+        .message.user {
+            justify-content: flex-end;
         }
-        .detail-avatar-container {
-            padding: 0 20px;
-            margin-top: -40px;
-            position: relative;
-            z-index: 5;
+
+        .message-content {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 5px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
         }
-        .detail-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: #3290EC;
-            border: 4px solid #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+
+        .message.user .message-content {
+            background: #333;
             color: white;
-            font-size: 32px;
-            font-weight: 500;
-            overflow: hidden;
         }
-        .detail-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+
+        .message.ai .message-content {
+            background: white;
+            color: #333;
+            border: 1px solid #ddd;
         }
-        .detail-info {
-            padding: 16px 20px;
-        }
-        .detail-name-container {
+
+        .input-area {
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #ccc;
             display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
+            gap: 10px;
         }
-        .detail-name {
-            font-size: 24px;
-            font-weight: 600;
-            color: #202124;
-        }
-        .detail-username {
-            font-size: 15px;
-            color: #6E7276;
-            margin-bottom: 12px;
-        }
-        .detail-subscribers {
+
+        #userInput {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
             font-size: 14px;
-            color: #5F6368;
-            margin-bottom: 20px;
-            font-weight: 400;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
         }
-        .detail-online {
-            font-size: 14px;
-            color: #10B981;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .online-icon {
-            font-size: 10px;
-            color: #10B981;
-        }
-        .detail-description {
-            font-size: 15px;
-            color: #202124;
-            line-height: 1.6;
-            margin-bottom: 0;
-        }
-        .detail-actions {
-            padding: 0 20px 20px 20px;
-        }
-        .action-button {
-            width: 100%;
-            padding: 14px 24px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
+
+        #sendBtn {
+            padding: 10px 20px;
+            background: #333;
+            color: white;
             border: none;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            background: #3290EC;
-            color: white;
-        }
-        .action-button:hover {
-            background: #2B83D8;
-        }
-        .detail-divider {
-            height: 1px;
-            background: #E4E4E4;
-            margin: 20px 0;
-        }
-        .text-link {
-            color: #3290EC;
-            text-decoration: none;
-            font-weight: 500;
             cursor: pointer;
-            transition: color 0.2s ease;
         }
-        .text-link:hover {
-            color: #2B83D8;
-        }
-        .auth-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+
+        #sendBtn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
     </style>
 </head>
 <body>
-    <div class="header-container">
-        <button class="menu-button">
-            <span class="material-icons menu-icon">menu</span>
-        </button>
-        <div class="search-container">
-            <div class="search-box">
-                <span class="material-icons search-icon">search</span>
-                <input type="text" class="search-input" placeholder="Search">
+    <div class="container">
+        <div class="header">
+            <h1>Chat IA</h1>
+        </div>
+
+        <div class="chat-box" id="chatBox">
+            <div class="message ai">
+                <div class="message-content">Hola, soy tu asistente de IA. ¿En qué puedo ayudarte?</div>
             </div>
         </div>
-    </div>
-    
-    <div class="tabs">
-        <div class="tab active">All</div>
-        <div class="tab">Users</div>
-        <div class="tab">Groups</div>
-        <div class="tab">Channels</div>
-        <div class="tab">Bots</div>
-    </div>
-    
-    <div class="chat-list" id="chatList"></div>
 
-    <button class="fab" id="fabButton">
-        <span class="material-icons fab-icon">add</span>
-    </button>
-
-    <div class="modal-overlay active" id="authModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h2 class="modal-title" id="authTitle">Sign In</h2>
-            </div>
-            <div class="modal-body">
-                <p class="modal-description" id="authDescription">Please enter your email and password to continue</p>
-                <div class="modal-input-container">
-                    <input type="email" class="modal-input" id="emailInput" placeholder="Email">
-                </div>
-                <div class="modal-input-container">
-                    <input type="password" class="modal-input" id="passwordInput" placeholder="Password">
-                </div>
-                <div class="error-message" id="authError">Error signing in</div>
-            </div>
-            <div class="modal-footer auth-footer">
-                <span class="text-link" id="toggleAuthMode">Create Account</span>
-                <button class="modal-button confirm" id="authButton">SIGN IN</button>
-            </div>
+        <div class="input-area">
+            <input 
+                type="text" 
+                id="userInput" 
+                placeholder="Escribe tu mensaje..." 
+                autocomplete="off"
+            >
+            <button id="sendBtn">Enviar</button>
         </div>
     </div>
 
-    <div class="modal-overlay" id="urlModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h2 class="modal-title">Enter Link</h2>
-                <button class="modal-close" id="modalClose">
-                    <span class="material-icons">close</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p class="modal-description">Please enter a t.me/username, t.me/joinchat/ or tg://resolve link:</p>
-                <div class="modal-input-container">
-                    <input type="text" class="modal-input" id="urlInput" placeholder="t.me/username">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-button cancel" id="cancelButton">CANCEL</button>
-                <button class="modal-button confirm" id="confirmButton">OPEN</button>
-            </div>
-        </div>
-    </div>
+    <script src="https://js.puter.com/v2/"></script>
 
-    <div class="detail-screen" id="detailScreen">
-        <div class="detail-header">
-            <button class="back-button" id="backButton">
-                <span class="material-icons back-icon">arrow_back</span>
-            </button>
-            <span class="detail-header-title" id="detailHeaderTitle">Channel Info</span>
-        </div>
-        <div class="detail-content">
-            <div class="detail-banner" id="detailBanner">
-                <span class="material-icons" style="font-size: 64px; color: rgba(255,255,255,0.3);">telegram</span>
-            </div>
-            <div class="detail-avatar-container">
-                <div class="detail-avatar" id="detailAvatar">
-                    <span style="font-size: 32px;">T</span>
-                </div>
-            </div>
-            <div class="detail-info">
-                <div class="detail-name-container">
-                    <span class="detail-name" id="detailName">Loading...</span>
-                    <span class="material-icons verified-badge" id="detailVerified" style="display: none;">verified</span>
-                </div>
-                <div class="detail-username" id="detailUsername">@username</div>
-                <div class="detail-subscribers" id="detailSubscribers">
-                    <span id="detailSubscribersText">Loading subscribers...</span>
-                    <div class="detail-online" id="detailOnline" style="display: none;">
-                        <span class="material-icons online-icon">fiber_manual_record</span>
-                        <span id="detailOnlineText">71 online</span>
-                    </div>
-                </div>
-                <div class="detail-description" id="detailDescription">Loading description...</div>
-            </div>
-            <div class="detail-divider"></div>
-            <div class="detail-actions">
-                <button class="action-button" id="openChannelButton">
-                    <span class="material-icons" style="font-size: 20px;">open_in_new</span>
-                    Open Channel
-                </button>
-            </div>
-        </div>
-    </div>
+    <script>
+        const chatBox = document.getElementById('chatBox');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
 
-    <div class="success-message" id="successMessage">URL saved successfully!</div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-        const app = initializeApp({
-            apiKey: "AIzaSyB7B5c4FvtJbAn9Vrr2pMrfBb5ufTW3JHU",
-            authDomain: "telegram-cgt.firebaseapp.com",
-            projectId: "telegram-cgt",
-            storageBucket: "telegram-cgt.firebasestorage.app",
-            messagingSenderId: "815818658380",
-            appId: "1:815818658380:web:e164fc9456157111551ae9"
-        });
-
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        const searchInput = document.querySelector('.search-input');
-        const tabs = document.querySelector('.tabs');
-        const chatList = document.getElementById('chatList');
-        const fabButton = document.getElementById('fabButton');
-        const authModal = document.getElementById('authModal');
-        const urlModal = document.getElementById('urlModal');
-        const modalClose = document.getElementById('modalClose');
-        const cancelButton = document.getElementById('cancelButton');
-        const confirmButton = document.getElementById('confirmButton');
-        const urlInput = document.getElementById('urlInput');
-        const successMessage = document.getElementById('successMessage');
-        const detailScreen = document.getElementById('detailScreen');
-        const backButton = document.getElementById('backButton');
-        const authButton = document.getElementById('authButton');
-        const emailInput = document.getElementById('emailInput');
-        const passwordInput = document.getElementById('passwordInput');
-        const authError = document.getElementById('authError');
-        const authTitle = document.getElementById('authTitle');
-        const authDescription = document.getElementById('authDescription');
-        const toggleAuthMode = document.getElementById('toggleAuthMode');
-
-        let isSignInMode = true;
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                authModal.classList.remove('active');
-                loadChats();
-            } else {
-                authModal.classList.add('active');
-            }
-        });
-
-        toggleAuthMode.addEventListener('click', () => {
-            isSignInMode = !isSignInMode;
-            if (isSignInMode) {
-                authTitle.textContent = 'Sign In';
-                authDescription.textContent = 'Please enter your email and password to continue';
-                authButton.textContent = 'SIGN IN';
-                toggleAuthMode.textContent = 'Create Account';
-            } else {
-                authTitle.textContent = 'Create Account';
-                authDescription.textContent = 'Enter your email and password to create a new account';
-                authButton.textContent = 'CREATE ACCOUNT';
-                toggleAuthMode.textContent = 'Sign In';
-            }
-            authError.classList.remove('show');
-            emailInput.value = '';
-            passwordInput.value = '';
-        });
-
-        authButton.addEventListener('click', async () => {
-            const email = emailInput.value.trim();
-            const password = passwordInput.value.trim();
+        function addMessage(text, isUser) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'ai'}`;
             
-            if (!email || !password) {
-                authError.textContent = 'Please fill in all fields';
-                authError.classList.add('show');
-                return;
-            }
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = text;
+            
+            messageDiv.appendChild(contentDiv);
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
 
-            authButton.disabled = true;
-            authButton.textContent = isSignInMode ? 'SIGNING IN...' : 'CREATING...';
-            authError.classList.remove('show');
+        function showLoading() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'message ai';
+            loadingDiv.id = 'loading-indicator';
+            
+            const loadingContent = document.createElement('div');
+            loadingContent.className = 'message-content';
+            loadingContent.textContent = 'Escribiendo...';
+            
+            loadingDiv.appendChild(loadingContent);
+            chatBox.appendChild(loadingDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function hideLoading() {
+            const loadingIndicator = document.getElementById('loading-indicator');
+            if (loadingIndicator) {
+                loadingIndicator.remove();
+            }
+        }
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            
+            if (!message) return;
+
+            addMessage(message, true);
+            userInput.value = '';
+            
+            sendBtn.disabled = true;
+            showLoading();
 
             try {
-                if (isSignInMode) {
-                    await signInWithEmailAndPassword(auth, email, password);
-                } else {
-                    await createUserWithEmailAndPassword(auth, email, password);
-                }
-            } catch (error) {
-                let errorMsg = 'Error processing request';
-                if (error.code === 'auth/invalid-email') errorMsg = 'Invalid email address';
-                else if (error.code === 'auth/user-not-found') errorMsg = 'User not found';
-                else if (error.code === 'auth/wrong-password') errorMsg = 'Incorrect password';
-                else if (error.code === 'auth/invalid-credential') errorMsg = 'Invalid credentials';
-                else if (error.code === 'auth/email-already-in-use') errorMsg = 'Email already in use';
-                else if (error.code === 'auth/weak-password') errorMsg = 'Password should be at least 6 characters';
-                
-                authError.textContent = errorMsg;
-                authError.classList.add('show');
-                authButton.disabled = false;
-                authButton.textContent = isSignInMode ? 'SIGN IN' : 'CREATE ACCOUNT';
-            }
-        });
-
-        passwordInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') authButton.click();
-        });
-
-        searchInput.addEventListener('focus', () => {
-            tabs.classList.add('active');
-            chatList.classList.add('with-tabs');
-        });
-
-        searchInput.addEventListener('blur', () => {
-            setTimeout(() => {
-                tabs.classList.remove('active');
-                chatList.classList.remove('with-tabs');
-            }, 200);
-        });
-
-        fabButton.addEventListener('click', () => {
-            urlModal.classList.add('active');
-            setTimeout(() => urlInput.focus(), 100);
-        });
-
-        modalClose.addEventListener('click', closeUrlModal);
-        cancelButton.addEventListener('click', closeUrlModal);
-        urlModal.addEventListener('click', (e) => {
-            if (e.target === urlModal) closeUrlModal();
-        });
-
-        backButton.addEventListener('click', () => {
-            detailScreen.classList.remove('active');
-            chatList.classList.remove('hidden');
-        });
-
-        confirmButton.addEventListener('click', async () => {
-            const url = urlInput.value.trim();
-            if (!url) return;
-            
-            confirmButton.disabled = true;
-            confirmButton.textContent = 'SAVING...';
-            
-            try {
-                await addDoc(collection(db, "telegram-urls"), {
-                    url: url,
-                    timestamp: serverTimestamp()
+                const response = await puter.ai.chat(message, {
+                    model: 'deepseek/deepseek-chat'
                 });
-                showSuccessMessage();
-                closeUrlModal();
+                
+                hideLoading();
+                addMessage(response, false);
             } catch (error) {
-                console.error("Error:", error);
-                alert("Error saving URL. Please try again.");
+                hideLoading();
+                addMessage('Error: ' + error.message, false);
+                console.error('Error:', error);
             } finally {
-                confirmButton.disabled = false;
-                confirmButton.textContent = 'OPEN';
+                sendBtn.disabled = false;
+                userInput.focus();
+            }
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
             }
         });
 
-        function closeUrlModal() {
-            urlModal.classList.remove('active');
-            urlInput.value = '';
-        }
-
-        function showSuccessMessage() {
-            successMessage.classList.add('show');
-            setTimeout(() => successMessage.classList.remove('show'), 3000);
-        }
-
-        urlInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') confirmButton.click();
-        });
-
-        function formatTelegramTime(timestamp) {
-            if (!timestamp || !timestamp.toDate) return 'now';
-            
-            const now = new Date();
-            const date = timestamp.toDate();
-            const diffMs = now - date;
-            const diffMins = Math.floor(diffMs / 60000);
-            const diffHours = Math.floor(diffMs / 3600000);
-            const diffDays = Math.floor(diffMs / 86400000);
-            
-            if (diffMins < 1) return 'now';
-            if (diffMins < 60) return `${diffMins}m`;
-            if (diffHours < 24) return `${diffHours}h`;
-            if (diffDays < 7) return `${diffDays}d`;
-            
-            const day = date.getDate();
-            const month = date.toLocaleString('en', { month: 'short' });
-            return `${day} ${month}`;
-        }
-
-        function loadChats() {
-            const fbQuery = query(collection(db, "telegram-urls"), orderBy("timestamp", "desc"));
-            onSnapshot(fbQuery, (snapshot) => {
-                chatList.innerHTML = '';
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    createChatItem(data.url, doc.id, data.timestamp);
-                });
-            });
-        }
-
-        function createChatItem(url, docId, timestamp) {
-            const chatItem = document.createElement('div');
-            chatItem.className = 'chat-item';
-            const timeString = formatTelegramTime(timestamp);
-            
-            chatItem.innerHTML = `
-                <div class="avatar"><span style="font-size: 24px;">T</span></div>
-                <div class="chat-content">
-                    <div class="chat-header">
-                        <span class="chat-name">Loading...</span>
-                    </div>
-                    <div class="chat-message">${url}</div>
-                </div>
-                <div class="chat-right">
-                    <span class="chat-time">${timeString}</span>
-                    <span class="loading-badge">LOADING</span>
-                </div>
-            `;
-            chatList.appendChild(chatItem);
-            scrapeUrl(url, chatItem, docId);
-        }
-
-        async function scrapeUrl(url, chatItem, docId) {
-            try {
-                const proxy = "https://api.allorigins.win/raw?url=";
-                const res = await fetch(proxy + encodeURIComponent(url));
-                if (!res.ok) throw new Error("Failed to load page");
-                
-                const html = await res.text();
-                const doc = new DOMParser().parseFromString(html, "text/html");
-                
-                const data = {
-                    nombre: q(doc, ".tgme_page_title span") || q(doc, ".tgme_page_title") || meta(doc, "og:title"),
-                    suscriptores: cleanSubscribers(q(doc, ".tgme_page_extra")),
-                    username: extractUsername(url),
-                    descripcion: clean(q(doc, ".tgme_page_description") || meta(doc, "og:description") || meta(doc, "description")),
-                    foto: q(doc, ".tgme_page_photo_image", "src") || meta(doc, "og:image"),
-                    verificado: !!doc.querySelector(".verified-icon"),
-                    enlaceGrupo: url
-                };
-
-                const avatar = chatItem.querySelector('.avatar');
-                const nameEl = chatItem.querySelector('.chat-name');
-                const messageEl = chatItem.querySelector('.chat-message');
-                const badge = chatItem.querySelector('.loading-badge');
-
-                if (data.foto) {
-                    avatar.innerHTML = `<img src="${data.foto}" alt="${data.nombre}">`;
-                } else if (data.nombre) {
-                    avatar.innerHTML = `<span style="font-size: 24px;">${data.nombre.charAt(0).toUpperCase()}</span>`;
-                }
-
-                nameEl.textContent = data.nombre || 'Unknown';
-                if (data.verificado) {
-                    nameEl.innerHTML += ' <span class="material-icons verified-badge" style="font-size: 16px; vertical-align: middle;">verified</span>';
-                }
-                
-                messageEl.textContent = data.descripcion || data.suscriptores || url;
-                badge.textContent = 'OPEN';
-                badge.className = 'open-badge';
-                chatItem.addEventListener('click', () => showDetails(data));
-
-            } catch (error) {
-                console.error("Error:", error);
-                const badge = chatItem.querySelector('.loading-badge');
-                if (badge) {
-                    badge.textContent = 'ERROR';
-                    badge.style.background = '#F44336';
-                }
-            }
-        }
-
-        function showDetails(data) {
-            chatList.classList.add('hidden');
-            detailScreen.classList.add('active');
-
-            const isBot = data.nombre?.toLowerCase().includes('bot') || data.username?.toLowerCase().includes('bot');
-            const isGroup = data.suscriptores?.toLowerCase().includes('members') && !data.suscriptores?.toLowerCase().includes('subscribers');
-
-            document.getElementById('detailHeaderTitle').textContent = data.nombre || 'Info';
-            document.getElementById('detailName').textContent = data.nombre || 'Unknown';
-            document.getElementById('detailUsername').textContent = data.username || '';
-            document.getElementById('detailUsername').style.display = data.username ? 'block' : 'none';
-            
-            const subscribersEl = document.getElementById('detailSubscribers');
-            const subscribersTextEl = document.getElementById('detailSubscribersText');
-            const onlineEl = document.getElementById('detailOnline');
-            const onlineTextEl = document.getElementById('detailOnlineText');
-            
-            if (isBot) {
-                subscribersEl.style.display = 'none';
-            } else if (data.suscriptores) {
-                const subsText = data.suscriptores.replace(/\s+/g, ' ').replace(/\u00A0/g, ' ').trim();
-                const parts = subsText.split(',');
-                if (parts.length === 2) {
-                    subscribersTextEl.textContent = parts[0].trim();
-                    subscribersEl.style.display = 'flex';
-                    onlineTextEl.textContent = parts[1].trim();
-                    onlineEl.style.display = 'flex';
-                } else {
-                    subscribersTextEl.textContent = subsText;
-                    subscribersEl.style.display = 'flex';
-                    onlineEl.style.display = 'none';
-                }
-            } else {
-                subscribersEl.style.display = 'none';
-            }
-
-            document.getElementById('detailDescription').textContent = data.descripcion || 'No description available';
-            document.getElementById('detailVerified').style.display = data.verificado ? 'inline-block' : 'none';
-
-            const banner = document.getElementById('detailBanner');
-            if (data.foto) {
-                banner.innerHTML = `<img src="${data.foto}" alt="${data.nombre}">`;
-            } else {
-                banner.innerHTML = '<span class="material-icons" style="font-size: 64px; color: rgba(255,255,255,0.3);">telegram</span>';
-            }
-
-            const avatar = document.getElementById('detailAvatar');
-            if (data.foto) {
-                avatar.innerHTML = `<img src="${data.foto}" alt="${data.nombre}">`;
-            } else if (data.nombre) {
-                avatar.innerHTML = `<span style="font-size: 32px;">${data.nombre.charAt(0).toUpperCase()}</span>`;
-            }
-
-            const openBtn = document.getElementById('openChannelButton');
-            openBtn.onclick = () => window.open(data.enlaceGrupo, '_blank');
-            
-            if (isBot) {
-                openBtn.innerHTML = '<span class="material-icons" style="font-size: 20px;">open_in_new</span> Open Bot';
-            } else if (isGroup) {
-                openBtn.innerHTML = '<span class="material-icons" style="font-size: 20px;">open_in_new</span> Open Group';
-            } else {
-                openBtn.innerHTML = '<span class="material-icons" style="font-size: 20px;">open_in_new</span> Open Channel';
-            }
-        }
-
-        const q = (doc, sel, attr) => {
-            const el = doc.querySelector(sel);
-            return attr ? el?.getAttribute(attr) : el?.textContent?.trim() || null;
-        };
-
-        const meta = (doc, name) => doc.querySelector(`meta[property="${name}"], meta[name="${name}"]`)?.content?.trim() || null;
-        const clean = t => t ? t.replace(/\s+/g, " ").trim() : null;
-        const cleanSubscribers = t => {
-            if (!t) return null;
-            let cleaned = t.replace(/\u00A0/g, "").trim();
-            cleaned = cleaned.replace(/(\d)\s+(\d)/g, "$1$2");
-            cleaned = cleaned.replace(/(\d)([a-zA-Z])/g, "$1 $2");
-            return cleaned;
-        };
-
-        function extractUsername(url) {
-            const m = url.match(/t\.me\/([^/?]+)/);
-            return m ? "@" + m[1] : null;
-        }
-
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-            });
-        });
+        userInput.focus();
     </script>
 </body>
 </html>
