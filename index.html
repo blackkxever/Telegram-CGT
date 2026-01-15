@@ -1,1221 +1,207 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Music App UI MOVI2L</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@vetixy/circular-std@1.0.0/dist/index.min.css">
-  <style>
-    :root {
-      --bg: #000;
-      --surface: #1a1a1a;
-      --surface-hover: #2a2a2a;
-      --text: #fff;
-      --text-muted: #a7a7a7;
-      --primary: #1ed760;
-      --primary-text: #000;
-      --font: 'CircularStd', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --xl: 28px;
-      --lg: 20px;
-      --md: 16px;
-      --sm: 14px;
-      --xs: 12px;
-      --normal: 400;
-      --medium: 500;
-      --semibold: 600;
-      --bold: 700;
-      --s1: 4px;
-      --s2: 8px;
-      --s3: 12px;
-      --s4: 16px;
-      --s6: 24px;
-      --r-sm: 4px;
-      --r-md: 12px;
-      --r-full: 9999px;
-      --i-md: 24px;
-      --i-lg: 28px;
-      --i-xl: 32px;
-      --b-md: 48px;
-      --b-lg: 56px;
-      --img-sm: 48px;
-      --img-md: 140px;
-      --img-lg: 200px;
-      --pad: 16px;
-      --nav: 80px;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    /* Global focus reset to prevent "square blur" artifacts on touch */
-    button:focus,
-    button:focus-visible,
-    .tab:focus,
-    .tab:focus-visible,
-    .nav-item:focus,
-    .nav-item:focus-visible,
-    .track-item:focus,
-    .track-item:focus-visible {
-      outline: none !important;
-      box-shadow: none !important;
-    }
-
-    button {
-      -webkit-appearance: none;
-      appearance: none;
-      background: transparent;
-    }
-
-    body {
-      background: var(--bg);
-      font-family: var(--font);
-      color: var(--text);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      overflow-x: hidden;
-    }
-
-    .container {
-      min-height: 100vh;
-      padding-bottom: var(--nav);
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      padding: var(--s4) var(--pad) 0;
-      margin-bottom: var(--s4);
-    }
-
-    .header-content {
-      display: flex;
-      flex-direction: column;
-      gap: var(--s1);
-    }
-
-    .header-title {
-      font-size: var(--xl);
-      font-weight: var(--bold);
-      line-height: 1.2;
-    }
-
-    .header-subtitle {
-      font-size: var(--xs);
-      font-weight: var(--normal);
-      color: var(--text-muted);
-      line-height: 1.5;
-      max-width: 260px;
-    }
-
-    .header-actions {
-      display: flex;
-      gap: var(--s2);
-      align-items: center;
-    }
-
-    .icon-button {
-      background: transparent;
-      border: none;
-      color: var(--text);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: var(--r-full);
-      width: var(--b-md);
-      height: var(--b-md);
-      min-width: var(--b-md);
-      min-height: var(--b-md);
-      padding: 0;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      outline: none;
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-      .icon-button {
-        transition: background-color 0.2s;
-      }
-
-      .icon-button:hover {
-        background: var(--surface);
-      }
-    }
-
-    .icon-button:active {
-      background: var(--surface);
-    }
-
-    .icon-button .material-icons {
-      font-size: var(--i-md);
-    }
-
-    .tabs-wrapper {
-      overflow: hidden;
-      margin-bottom: var(--s4);
-    }
-
-    .tabs-container {
-      display: flex;
-      gap: var(--s2);
-      overflow-x: auto;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-      padding: 0 var(--pad);
-      scroll-behavior: smooth;
-    }
-
-    .tabs-container::-webkit-scrollbar {
-      display: none;
-    }
-
-    .tab {
-      background: var(--surface);
-      border: none;
-      color: var(--text);
-      padding: var(--s3) var(--s4);
-      border-radius: var(--r-full);
-      font-family: var(--font);
-      font-size: var(--sm);
-      font-weight: var(--medium);
-      cursor: pointer;
-      white-space: nowrap;
-      flex-shrink: 0;
-      line-height: 1.5;
-      height: var(--b-md);
-      display: inline-flex;
-      align-items: center;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      outline: none;
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-      .tab {
-        transition: background-color 0.2s;
-      }
-
-      .tab:hover {
-        background: var(--surface-hover);
-      }
-    }
-
-    .tab:active {
-      background: var(--surface-hover);
-    }
-
-    .tab.active {
-      background: var(--primary);
-      color: var(--primary-text);
-      font-weight: var(--semibold);
-    }
-
-    .shimmer {
-      background: linear-gradient(90deg,
-          var(--surface) 0%,
-          var(--surface) 40%,
-          var(--surface-hover) 50%,
-          var(--surface) 60%,
-          var(--surface) 100%);
-      background-size: 200% 100%;
-      animation: shimmer 2s ease-in-out infinite;
-      flex-shrink: 0;
-    }
-
-    @keyframes shimmer {
-      0% {
-        background-position: -200% 0;
-      }
-
-      100% {
-        background-position: 200% 0;
-      }
-    }
-
-    .shimmer-tab {
-      height: var(--b-md);
-      border-radius: var(--r-full);
-    }
-
-    .shimmer-title {
-      height: var(--lg);
-      width: 50%;
-      max-width: 160px;
-      border-radius: var(--r-sm);
-    }
-
-    .shimmer-image {
-      height: var(--img-md);
-      width: var(--img-md);
-      border-radius: var(--r-md);
-      margin-bottom: var(--s4);
-    }
-
-    .shimmer-text {
-      height: var(--md);
-      border-radius: var(--r-sm);
-      margin-bottom: var(--s1);
-    }
-
-    .shimmer-text-sm {
-      height: var(--sm);
-      border-radius: var(--r-sm);
-    }
-
-    .detail-background-shimmer {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-    }
-
-    .section {
-      margin-bottom: var(--s6);
-    }
-
-    .section:last-child {
-      margin-bottom: 0;
-    }
-
-    .section-header {
-      padding: 0 var(--pad);
-      margin-bottom: var(--s4);
-    }
-
-    .section-title {
-      font-size: var(--lg);
-      font-weight: var(--bold);
-      line-height: 1.3;
-    }
-
-    .section-items {
-      display: flex;
-      gap: var(--s4);
-      overflow-x: auto;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-      scroll-behavior: smooth;
-      padding: 0 var(--pad);
-    }
-
-    .section-items::-webkit-scrollbar {
-      display: none;
-    }
-
-    .item-container {
-      flex-shrink: 0;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-      width: min-content;
-    }
-
-
-
-    .item-image {
-      display: block;
-      height: var(--img-md);
-      width: auto;
-      border-radius: var(--r-md);
-      object-fit: cover;
-      margin-bottom: var(--s4);
-    }
-
-
-
-    .item-info {
-      width: 0;
-      min-width: 100%;
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-    }
-
-    .item-title {
-      font-size: var(--md);
-      font-weight: var(--semibold);
-      line-height: 1.5;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      line-clamp: 2;
-      -webkit-box-orient: vertical;
-      margin-bottom: var(--s1);
-    }
-
-    .item-artist {
-      font-size: var(--sm);
-      font-weight: var(--normal);
-      color: var(--text-muted);
-      line-height: 1.5;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--bg);
-      display: flex;
-      justify-content: space-around;
-      padding: var(--s4);
-      z-index: 1001;
-      height: var(--nav);
-      align-items: center;
-    }
-
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: var(--s2);
-      cursor: pointer;
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      padding: 0;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      outline: none;
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-      .nav-item {
-        transition: color 0.2s;
-      }
-
-      .nav-item:hover {
-        color: var(--text);
-      }
-    }
-
-    .nav-item.active {
-      color: var(--text);
-    }
-
-    .nav-item:active {
-      color: var(--text);
-      transform: scale(0.9);
-    }
-
-    .nav-item .material-icons {
-      font-size: var(--i-md);
-    }
-
-    .nav-item-label {
-      font-size: var(--xs);
-      font-weight: var(--medium);
-      line-height: 1;
-    }
-
-    .detail-view {
-      min-height: 100vh;
-      background: var(--bg);
-      display: none;
-      padding-bottom: var(--nav);
-    }
-
-    .detail-header {
-      position: relative;
-      overflow: hidden;
-      padding-top: var(--nav);
-    }
-
-    .detail-nav-buttons {
-      position: absolute;
-      inset: 0 0 auto 0;
-      z-index: 10;
-      display: flex;
-      justify-content: space-between;
-      padding: var(--s4);
-      height: var(--nav);
-      align-items: center;
-    }
-
-    .detail-background {
-      position: absolute;
-      inset: 0;
-      background-size: cover;
-      background-position: center;
-      filter: blur(15px);
-      transform: scale(1.1);
-      z-index: 0;
-    }
-
-    .detail-gradient {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg,
-          rgba(0, 0, 0, 0.38) 0%,
-          rgba(0, 0, 0, 0.5) 22%,
-          rgba(0, 0, 0, 0.72) 46%,
-          rgba(0, 0, 0, 0.92) 70%,
-          #000 100%);
-      z-index: 1;
-    }
-
-    .detail-cover-container {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      justify-content: center;
-    }
-
-    .detail-cover {
-      width: var(--img-lg);
-      height: var(--img-lg);
-      border-radius: var(--r-md);
-      object-fit: cover;
-    }
-
-    .detail-info {
-      background: var(--bg);
-      padding: var(--s4) var(--pad) 0;
-    }
-
-    .detail-title {
-      font-size: var(--xl);
-      font-weight: var(--bold);
-      line-height: 1.2;
-    }
-
-    .detail-meta {
-      font-size: var(--sm);
-      font-weight: var(--normal);
-      color: var(--text-muted);
-      line-height: 1.5;
-      margin-top: var(--s2);
-    }
-
-    .detail-actions {
-      background: var(--bg);
-      display: flex;
-      align-items: center;
-      gap: var(--s2);
-      padding: var(--s4) var(--pad) var(--s6);
-    }
-
-    .action-button {
-      background: transparent;
-      border: none;
-      color: var(--text);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: var(--r-full);
-      width: var(--b-md);
-      height: var(--b-md);
-      min-width: var(--b-md);
-      min-height: var(--b-md);
-      padding: 0;
-      flex-shrink: 0;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      outline: none;
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-      .action-button {
-        transition: background-color 0.2s;
-      }
-
-      .action-button:not(.action-button-play):hover {
-        background: var(--surface);
-      }
-    }
-
-    .action-button:active {
-      background: var(--surface);
-    }
-
-    .action-button .material-icons {
-      font-size: var(--i-lg);
-    }
-
-    .action-button-shuffle {
-      margin-left: auto;
-    }
-
-    .action-button-play {
-      background: var(--primary);
-      color: var(--primary-text);
-      width: var(--b-lg);
-      height: var(--b-lg);
-      min-width: var(--b-lg);
-      min-height: var(--b-lg);
-      margin-left: var(--s4);
-    }
-
-    .action-button-play:hover {
-      background: var(--primary);
-      color: var(--primary-text);
-    }
-
-
-
-    .action-button-play .material-icons {
-      font-size: var(--i-xl);
-    }
-
-
-
-    .track-list {
-      background: var(--bg);
-      padding: 0 var(--pad);
-    }
-
-    .track-item {
-      display: flex;
-      align-items: center;
-      gap: var(--s3);
-      padding: var(--s2) 0;
-      cursor: pointer;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      outline: none;
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-      .track-item:hover {
-        background: var(--surface);
-        margin: 0 calc(var(--pad) * -1);
-        padding: var(--s2) var(--pad);
-      }
-    }
-
-    .track-item:active {
-      background: var(--surface);
-      margin: 0 calc(var(--pad) * -1);
-      padding: var(--s2) var(--pad);
-    }
-
-    .track-thumbnail {
-      width: var(--img-sm);
-      height: auto;
-      border-radius: var(--r-sm);
-      object-fit: cover;
-      flex-shrink: 0;
-    }
-
-    .track-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .track-name {
-      font-size: var(--md);
-      font-weight: var(--semibold);
-      line-height: 1.5;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .track-artist {
-      font-size: var(--sm);
-      font-weight: var(--normal);
-      color: var(--text-muted);
-      line-height: 1.5;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      margin-top: var(--s1);
-    }
-
-    .track-menu {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: var(--b-md);
-      height: var(--b-md);
-      min-width: var(--b-md);
-      min-height: var(--b-md);
-      border-radius: var(--r-full);
-      padding: 0;
-      flex-shrink: 0;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-    }
-
-    .track-menu .material-icons {
-      font-size: var(--i-md);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat IA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border: 1px solid #ccc;
+            width: 100%;
+            max-width: 800px;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: #333;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .chat-box {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #fafafa;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 5px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .message.user .message-content {
+            background: #333;
+            color: white;
+        }
+
+        .message.ai .message-content {
+            background: white;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .input-area {
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #ccc;
+            display: flex;
+            gap: 10px;
+        }
+
+        #userInput {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        #sendBtn {
+            padding: 10px 20px;
+            background: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #sendBtn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
 </head>
-
 <body>
-  <div class="container" id="homeView">
-    <header class="header">
-      <div class="header-content">
-        <h1 class="header-title">Buenos días</h1>
-        <p class="header-subtitle">Recarga energías con tu música favorita</p>
-      </div>
-      <div class="header-actions">
-        <button class="icon-button" aria-label="Notificaciones">
-          <span class="material-icons">notifications_none</span>
-        </button>
-        <button class="icon-button" aria-label="Configuración">
-          <span class="material-icons">settings</span>
-        </button>
-      </div>
-    </header>
-    <div class="tabs-wrapper">
-      <div class="tabs-container" id="tabs"></div>
+    <div class="container">
+        <div class="header">
+            <h1>Chat IA</h1>
+        </div>
+
+        <div class="chat-box" id="chatBox">
+            <div class="message ai">
+                <div class="message-content">Hola, soy tu asistente de IA. ¿En qué puedo ayudarte?</div>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <input 
+                type="text" 
+                id="userInput" 
+                placeholder="Escribe tu mensaje..." 
+                autocomplete="off"
+            >
+            <button id="sendBtn">Enviar</button>
+        </div>
     </div>
-    <main id="content"></main>
-  </div>
 
-  <div class="detail-view" id="detailView">
-    <div class="detail-header">
-      <div class="detail-background" id="detailBackground"></div>
-      <div class="detail-gradient"></div>
-      <div class="detail-nav-buttons">
-        <button class="icon-button" aria-label="Volver" id="backButton">
-          <span class="material-icons">arrow_back</span>
-        </button>
-        <button class="icon-button" aria-label="Buscar">
-          <span class="material-icons">search</span>
-        </button>
-      </div>
-      <div class="detail-cover-container">
-        <img class="detail-cover" id="detailCover" src="" alt="">
-      </div>
-    </div>
-    <div class="detail-info">
-      <h1 class="detail-title" id="detailTitle"></h1>
-      <div class="detail-meta" id="detailMeta"></div>
-    </div>
-    <div class="detail-actions">
-      <button class="action-button" aria-label="Agregar">
-        <span class="material-icons">add_circle_outline</span>
-      </button>
-      <button class="action-button" aria-label="Descargar">
-        <span class="material-icons">arrow_circle_down</span>
-      </button>
-      <button class="action-button" aria-label="Más opciones">
-        <span class="material-icons">more_horiz</span>
-      </button>
-      <button class="action-button action-button-shuffle" aria-label="Aleatorio">
-        <span class="material-icons">shuffle</span>
-      </button>
-      <button class="action-button action-button-play" aria-label="Reproducir">
-        <span class="material-icons">play_arrow</span>
-      </button>
-    </div>
-    <div class="track-list" id="trackList"></div>
-  </div>
+    <script src="https://js.puter.com/v2/"></script>
 
-  <nav class="bottom-nav">
-    <button class="nav-item active" aria-label="Inicio">
-      <span class="material-icons">home</span>
-      <span class="nav-item-label">Inicio</span>
-    </button>
-    <button class="nav-item" aria-label="Buscar">
-      <span class="material-icons">search</span>
-      <span class="nav-item-label">Buscar</span>
-    </button>
-    <button class="nav-item" aria-label="Biblioteca">
-      <span class="material-icons">library_music</span>
-      <span class="nav-item-label">Biblioteca</span>
-    </button>
-  </nav>
+    <script>
+        const chatBox = document.getElementById('chatBox');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
 
-  <script>
-    const API = 'https://braided-music-1--noreplyscuritym.replit.app';
-
-    // Utilidad para manejar eventos touch y click de manera unificada
-    const addUnifiedClickHandler = (element, handler) => {
-      let startX = 0;
-      let startY = 0;
-      let isScrolling = false;
-
-      element.addEventListener('touchstart', (e) => {
-        startX = e.changedTouches[0].pageX;
-        startY = e.changedTouches[0].pageY;
-        isScrolling = false;
-      }, { passive: true });
-
-      element.addEventListener('touchend', (e) => {
-        const endX = e.changedTouches[0].pageX;
-        const endY = e.changedTouches[0].pageY;
-
-        // Calcular la distancia (Delta)
-        const diffX = Math.abs(endX - startX);
-        const diffY = Math.abs(endY - startY);
-
-        // Si se movió más de 10px, es Scroll
-        if (diffX > 10 || diffY > 10) {
-          isScrolling = true;
-          return;
+        function addMessage(text, isUser) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'ai'}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.textContent = text;
+            
+            messageDiv.appendChild(contentDiv);
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        e.preventDefault();
-        handler(e);
-      });
-
-      element.addEventListener('click', (e) => {
-        // Ignorar click si fue detectado como scroll táctil
-        if (isScrolling) {
-          isScrolling = false;
-          return;
+        function showLoading() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'message ai';
+            loadingDiv.id = 'loading-indicator';
+            
+            const loadingContent = document.createElement('div');
+            loadingContent.className = 'message-content';
+            loadingContent.textContent = 'Escribiendo...';
+            
+            loadingDiv.appendChild(loadingContent);
+            chatBox.appendChild(loadingDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
-        handler(e);
-      });
-    };
 
-    const App = {
-      currentView: 'home',
-      views: {},
-
-      init() {
-        this.views.home = document.getElementById('homeView');
-        this.views.detail = document.getElementById('detailView');
-        this.showView('home');
-        this.setupBackButton();
-      },
-
-      setupBackButton() {
-        const backBtn = document.getElementById('backButton');
-        addUnifiedClickHandler(backBtn, () => {
-          this.showView('home');
-        });
-      },
-
-      showView(viewName) {
-        Object.keys(this.views).forEach(key => {
-          if (key === viewName) {
-            this.views[key].style.display = 'block';
-          } else {
-            this.views[key].style.display = 'none';
-          }
-        });
-        this.currentView = viewName;
-      }
-    };
-
-    const createTabsShimmer = () => {
-      const c = document.getElementById('tabs');
-      c.innerHTML = '';
-      [80, 100, 90, 110, 85, 95].forEach(w => {
-        const s = document.createElement('div');
-        s.className = 'shimmer shimmer-tab';
-        s.style.width = `${w}px`;
-        c.appendChild(s);
-      });
-    };
-
-    const createContentShimmer = () => {
-      const c = document.getElementById('content');
-      c.innerHTML = '';
-      for (let i = 0; i < 4; i++) {
-        const sec = document.createElement('div');
-        sec.className = 'section';
-
-        const h = document.createElement('div');
-        h.className = 'section-header';
-        const t = document.createElement('div');
-        t.className = 'shimmer shimmer-title';
-        h.appendChild(t);
-        sec.appendChild(h);
-
-        const its = document.createElement('div');
-        its.className = 'section-items';
-        for (let j = 0; j < 5; j++) {
-          const ic = document.createElement('div');
-          ic.className = 'item-container';
-
-          const img = document.createElement('div');
-          img.className = 'shimmer shimmer-image';
-          ic.appendChild(img);
-
-          const inf = document.createElement('div');
-          inf.className = 'item-info';
-
-          const ts = document.createElement('div');
-          ts.className = 'shimmer shimmer-text';
-          ts.style.width = '80%';
-          inf.appendChild(ts);
-
-          const as = document.createElement('div');
-          as.className = 'shimmer shimmer-text-sm';
-          as.style.width = '60%';
-          inf.appendChild(as);
-
-          ic.appendChild(inf);
-          its.appendChild(ic);
-        }
-        sec.appendChild(its);
-        c.appendChild(sec);
-      }
-    };
-
-    const createDetailShimmer = () => {
-      const bg = document.getElementById('detailBackground');
-      const bgContainer = bg.parentElement;
-      const cv = document.getElementById('detailCover');
-      const tt = document.getElementById('detailTitle');
-      const mt = document.getElementById('detailMeta');
-      const tl = document.getElementById('trackList');
-
-      bg.style.backgroundImage = 'none';
-      bg.style.backgroundColor = 'transparent';
-      const bgShimmer = document.createElement('div');
-      bgShimmer.className = 'detail-background-shimmer shimmer';
-      bgContainer.insertBefore(bgShimmer, bg.nextSibling);
-
-      cv.style.display = 'none';
-      const cvShimmer = document.createElement('div');
-      cvShimmer.className = 'shimmer';
-      cvShimmer.style.width = 'var(--img-lg)';
-      cvShimmer.style.height = 'var(--img-lg)';
-      cvShimmer.style.borderRadius = 'var(--r-md)';
-      cvShimmer.style.flexShrink = '0';
-      cv.parentElement.appendChild(cvShimmer);
-
-      tt.innerHTML = '';
-      const ttShimmer = document.createElement('div');
-      ttShimmer.className = 'shimmer';
-      ttShimmer.style.width = '70%';
-      ttShimmer.style.height = 'var(--xl)';
-      ttShimmer.style.borderRadius = 'var(--r-sm)';
-      tt.appendChild(ttShimmer);
-
-      mt.innerHTML = '';
-      const mtShimmer1 = document.createElement('div');
-      mtShimmer1.className = 'shimmer';
-      mtShimmer1.style.width = '100%';
-      mtShimmer1.style.height = 'var(--sm)';
-      mtShimmer1.style.borderRadius = 'var(--r-sm)';
-      mt.appendChild(mtShimmer1);
-      const mtShimmer2 = document.createElement('div');
-      mtShimmer2.className = 'shimmer';
-      mtShimmer2.style.width = '80%';
-      mtShimmer2.style.height = 'var(--sm)';
-      mtShimmer2.style.borderRadius = 'var(--r-sm)';
-      mtShimmer2.style.marginTop = 'var(--s1)';
-      mt.appendChild(mtShimmer2);
-
-      tl.innerHTML = '';
-      for (let i = 0; i < 8; i++) {
-        const ti = document.createElement('div');
-        ti.style.display = 'flex';
-        ti.style.alignItems = 'center';
-        ti.style.gap = 'var(--s3)';
-        ti.style.padding = 'var(--s2) 0';
-
-        const th = document.createElement('div');
-        th.className = 'shimmer';
-        th.style.width = 'var(--img-sm)';
-        th.style.height = 'var(--img-sm)';
-        th.style.borderRadius = 'var(--r-sm)';
-        th.style.flexShrink = '0';
-        ti.appendChild(th);
-
-        const inf = document.createElement('div');
-        inf.style.flex = '1';
-        inf.style.minWidth = '0';
-
-        const n = document.createElement('div');
-        n.className = 'shimmer';
-        n.style.width = '80%';
-        n.style.height = 'var(--md)';
-        n.style.borderRadius = 'var(--r-sm)';
-        n.style.marginBottom = 'var(--s1)';
-        inf.appendChild(n);
-
-        const a = document.createElement('div');
-        a.className = 'shimmer';
-        a.style.width = '60%';
-        a.style.height = 'var(--sm)';
-        a.style.borderRadius = 'var(--r-sm)';
-        inf.appendChild(a);
-
-        ti.appendChild(inf);
-        tl.appendChild(ti);
-      }
-    };
-
-    const openPlaylist = async (id) => {
-      App.showView('detail');
-      window.scrollTo(0, 0);
-
-      const tl = document.getElementById('trackList');
-      tl.innerHTML = '';
-
-      createDetailShimmer();
-
-      try {
-        const res = await fetch(`${API}/browse/${id}`);
-        if (!res.ok) return;
-        const data = await res.json();
-        showDetail(data);
-      } catch (err) {
-        console.error('Error loading playlist:', err);
-      }
-    };
-
-    const showDetail = (data) => {
-      const bg = document.getElementById('detailBackground');
-      const bgContainer = bg.parentElement;
-      const cv = document.getElementById('detailCover');
-      const cvContainer = cv.parentElement;
-      const tt = document.getElementById('detailTitle');
-      const mt = document.getElementById('detailMeta');
-      const tl = document.getElementById('trackList');
-
-      const bgShimmer = bgContainer.querySelector('.detail-background-shimmer');
-
-      const cvShimmer = cvContainer.querySelector('.shimmer');
-      if (cvShimmer) {
-        cvShimmer.remove();
-      }
-      cv.style.display = 'block';
-
-      if (data.thumbnails?.length) {
-        const url = data.thumbnails[0].url;
-
-        cv.src = url;
-        cv.alt = data.title || 'Cover';
-        cv.onerror = () => {
-          cv.style.display = 'none';
-          const shimmer = document.createElement('div');
-          shimmer.className = 'shimmer';
-          shimmer.style.width = 'var(--img-lg)';
-          shimmer.style.height = 'var(--img-lg)';
-          shimmer.style.borderRadius = 'var(--r-md)';
-          shimmer.style.flexShrink = '0';
-          cvContainer.appendChild(shimmer);
-        };
-
-        const bgImg = new Image();
-        bgImg.src = url;
-        bgImg.onload = () => {
-          bg.style.backgroundImage = `url('${url}')`;
-          if (bgShimmer) bgShimmer.remove();
-        };
-        bgImg.onerror = () => {
-          if (bgShimmer) bgShimmer.remove();
-        };
-
-      } else {
-        if (bgShimmer) bgShimmer.remove();
-      }
-
-      tt.innerHTML = '';
-      tt.textContent = data.title || '';
-
-      mt.innerHTML = '';
-      mt.textContent = data.description || '';
-
-      tl.innerHTML = '';
-      if (data.tracks?.length) {
-        data.tracks.forEach((track, i) => {
-          const ti = document.createElement('div');
-          ti.className = 'track-item';
-
-          if (track.thumbnails?.length) {
-            const th = document.createElement('img');
-            th.className = 'track-thumbnail';
-            th.src = track.thumbnails[0].url;
-            th.alt = track.title || '';
-
-            th.onerror = () => {
-              th.style.display = 'none';
-              const shimmer = document.createElement('div');
-              shimmer.className = 'shimmer';
-              shimmer.style.width = 'var(--img-sm)';
-              shimmer.style.height = 'var(--img-sm)';
-              shimmer.style.borderRadius = 'var(--r-sm)';
-              shimmer.style.flexShrink = '0';
-              ti.insertBefore(shimmer, ti.firstChild);
-            };
-
-            ti.appendChild(th);
-          }
-
-          const inf = document.createElement('div');
-          inf.className = 'track-info';
-
-          const n = document.createElement('div');
-          n.className = 'track-name';
-          n.textContent = track.title || `Track ${i + 1}`;
-          inf.appendChild(n);
-
-          if (track.artist) {
-            const a = document.createElement('div');
-            a.className = 'track-artist';
-            a.textContent = track.artist;
-            inf.appendChild(a);
-          }
-
-          ti.appendChild(inf);
-
-          const m = document.createElement('button');
-          m.className = 'track-menu';
-          m.innerHTML = '<span class="material-icons">more_vert</span>';
-          ti.appendChild(m);
-
-          tl.appendChild(ti);
-        });
-      }
-    };
-
-    const renderContent = (sections) => {
-      const c = document.getElementById('content');
-      c.innerHTML = '';
-      if (!sections?.length) return;
-
-      sections.forEach(section => {
-        if (!section.title) return;
-
-        const el = document.createElement('section');
-        el.className = 'section';
-
-        const h = document.createElement('div');
-        h.className = 'section-header';
-        const t = document.createElement('h2');
-        t.className = 'section-title';
-        t.textContent = section.title;
-        h.appendChild(t);
-        el.appendChild(h);
-
-        if (section.items?.length) {
-          const its = document.createElement('div');
-          its.className = 'section-items';
-
-          section.items.forEach(item => {
-            if (!item.thumbnails?.length) return;
-
-            const ic = document.createElement('div');
-            ic.className = 'item-container';
-
-            // Usar el manejador unificado para touch y click
-            addUnifiedClickHandler(ic, (e) => {
-              if (item.type === 'playlist' || item.type === 'album') {
-                const id = item.playlistId || item.browseId;
-                if (id) openPlaylist(id);
-              }
-            });
-
-            const img = document.createElement('img');
-            img.className = 'item-image';
-            img.src = item.thumbnails[0].url;
-            img.alt = item.title || 'Imagen';
-            img.loading = 'lazy';
-
-            img.onerror = () => {
-              img.style.display = 'none';
-              const shimmer = document.createElement('div');
-              shimmer.className = 'shimmer';
-              shimmer.style.width = 'var(--img-md)';
-              shimmer.style.height = 'var(--img-md)';
-              shimmer.style.borderRadius = 'var(--r-md)';
-              shimmer.style.marginBottom = 'var(--s4)';
-              shimmer.style.flexShrink = '0';
-              ic.insertBefore(shimmer, ic.firstChild);
-            };
-
-            ic.appendChild(img);
-
-            const inf = document.createElement('div');
-            inf.className = 'item-info';
-
-            if (item.title) {
-              const tit = document.createElement('div');
-              tit.className = 'item-title';
-              tit.textContent = item.title;
-              inf.appendChild(tit);
+        function hideLoading() {
+            const loadingIndicator = document.getElementById('loading-indicator');
+            if (loadingIndicator) {
+                loadingIndicator.remove();
             }
-
-            if (item.artist) {
-              const art = document.createElement('div');
-              art.className = 'item-artist';
-              art.textContent = item.artist;
-              inf.appendChild(art);
-            }
-
-            ic.appendChild(inf);
-            its.appendChild(ic);
-          });
-
-          el.appendChild(its);
         }
 
-        c.appendChild(el);
-      });
-    };
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            
+            if (!message) return;
 
-    const renderTabs = (chips, act) => {
-      const c = document.getElementById('tabs');
-      c.innerHTML = '';
+            addMessage(message, true);
+            userInput.value = '';
+            
+            sendBtn.disabled = true;
+            showLoading();
 
-      const ini = document.createElement('button');
-      ini.className = `tab${act === 'Inicio' ? ' active' : ''}`;
-      ini.setAttribute('role', 'tab');
-      ini.textContent = 'Inicio';
+            try {
+                const response = await puter.ai.chat(message, {
+                    model: 'deepseek/deepseek-chat'
+                });
+                
+                hideLoading();
+                addMessage(response, false);
+            } catch (error) {
+                hideLoading();
+                addMessage('Error: ' + error.message, false);
+                console.error('Error:', error);
+            } finally {
+                sendBtn.disabled = false;
+                userInput.focus();
+            }
+        }
 
-      // Usar el manejador unificado para los tabs
-      addUnifiedClickHandler(ini, () => loadData());
-
-      c.appendChild(ini);
-
-      if (chips?.length) {
-        chips.forEach(ch => {
-          const t = document.createElement('button');
-          t.className = `tab${ch.text === act || ch.is_selected ? ' active' : ''}`;
-          t.setAttribute('role', 'tab');
-          t.textContent = ch.text;
-
-          // Usar el manejador unificado para los tabs
-          addUnifiedClickHandler(t, () => loadData(ch.text));
-
-          c.appendChild(t);
+        sendBtn.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
         });
-      }
-    };
 
-    const loadData = async (f) => {
-      createTabsShimmer();
-      createContentShimmer();
-
-      try {
-        const url = f ? `${API}/home?filter=${encodeURIComponent(f)}` : `${API}/home`;
-        const res = await fetch(url);
-        if (!res.ok) return;
-
-        const data = await res.json();
-        renderTabs(data.header?.chips || [], f || 'Inicio');
-        if (data.sections) renderContent(data.sections);
-      } catch (err) {
-        console.error('Error loading data:', err);
-      }
-    };
-
-    App.init();
-    loadData();
-  </script>
+        userInput.focus();
+    </script>
 </body>
-
 </html>
