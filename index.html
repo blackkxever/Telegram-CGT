@@ -3,533 +3,241 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@vetixy/circular-std@1.0.0/dist/index.min.css">
+    <title>DJ - Asistente Musical</title>
     <script src="https://js.puter.com/v2/"></script>
     <style>
-        :root {
-            --bg: #000;
-            --surface: #1a1a1a;
-            --surface-hover: #2a2a2a;
-            --text: #fff;
-            --text-muted: #a7a7a7;
-            --primary: #1ed760;
-            --primary-text: #000;
-            --font: 'CircularStd', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            --xl: 28px;
-            --lg: 20px;
-            --md: 16px;
-            --sm: 14px;
-            --xs: 12px;
-            --normal: 400;
-            --medium: 500;
-            --semibold: 600;
-            --bold: 700;
-            --s1: 4px;
-            --s2: 8px;
-            --s3: 12px;
-            --s4: 16px;
-            --s6: 24px;
-            --r-sm: 4px;
-            --r-md: 12px;
-            --r-full: 9999px;
-            --i-md: 24px;
-            --i-lg: 28px;
-            --i-xl: 32px;
-            --b-md: 48px;
-            --b-lg: 56px;
-            --img-sm: 48px;
-            --img-md: 140px;
-            --img-lg: 200px;
-            --pad: 16px;
-            --nav: 80px;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
         }
-
-        button:focus,
-        button:focus-visible,
-        input:focus,
-        input:focus-visible {
-            outline: none !important;
-            box-shadow: none !important;
-        }
-
-        button {
-            -webkit-appearance: none;
-            appearance: none;
-            background: transparent;
-        }
-
+        
         body {
-            background: var(--bg);
-            font-family: var(--font);
-            color: var(--text);
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            overflow-x: hidden;
-        }
-
-        .container {
-            min-height: 100vh;
-            padding-bottom: var(--nav);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+            background: #000;
+            color: #fff;
+            height: 100vh;
             display: flex;
             flex-direction: column;
         }
-
-        .header {
-            display: flex;
-            align-items: center;
-            padding: var(--s4) var(--pad) 0;
-            margin-bottom: var(--s4);
+        
+        #header {
+            background: #1a1a1a;
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #333;
         }
-
-        .icon-button {
-            background: transparent;
-            border: none;
-            color: var(--text);
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: var(--r-full);
-            width: var(--b-md);
-            height: var(--b-md);
-            min-width: var(--b-md);
-            min-height: var(--b-md);
-            padding: 0;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-            outline: none;
+        
+        #header h1 {
+            font-size: 20px;
+            font-weight: 600;
         }
-
-        @media (hover: hover) and (pointer: fine) {
-            .icon-button {
-                transition: background-color 0.2s;
-            }
-
-            .icon-button:hover {
-                background: var(--surface);
-            }
-        }
-
-        .icon-button:active {
-            background: var(--surface);
-        }
-
-        .icon-button .material-icons {
-            font-size: var(--i-md);
-        }
-
-        .messages-wrapper {
+        
+        #messages {
             flex: 1;
             overflow-y: auto;
-            overflow-x: hidden;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-
-        .messages-wrapper::-webkit-scrollbar {
-            display: none;
-        }
-
-        .messages-container {
-            padding: 0 var(--pad);
+            padding: 15px;
             display: flex;
             flex-direction: column;
-            gap: var(--s4);
-            min-height: 100%;
+            gap: 12px;
         }
-
+        
         .message {
-            display: flex;
-            flex-direction: column;
-            gap: var(--s2);
+            padding: 12px 15px;
             max-width: 85%;
-            animation: messageSlide 0.2s ease-out;
+            line-height: 1.4;
         }
-
-        @keyframes messageSlide {
-            from {
-                opacity: 0;
-                transform: translateY(var(--s3));
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .message.user {
+        
+        .user {
+            background: #2a2a2a;
             align-self: flex-end;
+            text-align: right;
         }
-
-        .message.assistant {
+        
+        .assistant {
+            background: #1a4d2e;
             align-self: flex-start;
         }
-
-        .message-bubble {
-            padding: var(--s3) var(--s4);
-            border-radius: var(--r-md);
-            font-size: var(--md);
-            font-weight: var(--normal);
-            line-height: 1.5;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-
-        .message.user .message-bubble {
-            background: var(--primary);
-            color: var(--primary-text);
-            border-bottom-right-radius: var(--r-sm);
-        }
-
-        .message.assistant .message-bubble {
-            background: var(--surface);
-            color: var(--text);
-            border-bottom-left-radius: var(--r-sm);
-        }
-
-        .message-time {
-            font-size: var(--xs);
-            font-weight: var(--medium);
-            color: var(--text-muted);
-            line-height: 1;
-            padding: 0 var(--s2);
-        }
-
-        .message.user .message-time {
-            align-self: flex-end;
-        }
-
-        .message.assistant .message-time {
+        
+        .loading {
+            background: #1a1a1a;
             align-self: flex-start;
+            color: #888;
         }
-
-        .empty-state {
+        
+        #input-area {
+            background: #1a1a1a;
+            padding: 12px;
+            display: flex;
+            gap: 8px;
+            border-top: 1px solid #333;
+        }
+        
+        #user-input {
             flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: var(--s4);
-            padding: var(--s6);
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 12px;
+            font-size: 16px;
+            outline: none;
         }
-
-        .empty-state-icon {
-            width: var(--b-lg);
-            height: var(--b-lg);
-            background: var(--surface);
-            border-radius: var(--r-full);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .empty-state-icon .material-icons {
-            font-size: var(--i-xl);
-            color: var(--text-muted);
-        }
-
-        .empty-state-title {
-            font-size: var(--lg);
-            font-weight: var(--bold);
-            color: var(--text-muted);
-            text-align: center;
-            line-height: 1.3;
-        }
-
-        .empty-state-subtitle {
-            font-size: var(--sm);
-            font-weight: var(--normal);
-            color: var(--text-muted);
-            text-align: center;
-            line-height: 1.5;
-            max-width: 260px;
-        }
-
-        .input-container {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            align-items: center;
-            gap: var(--s3);
-            padding: var(--s4);
-            background: var(--bg);
-            z-index: 1001;
-            height: var(--nav);
-        }
-
-        .add-button {
-            width: var(--b-lg);
-            height: var(--b-lg);
-            min-width: var(--b-lg);
-            min-height: var(--b-lg);
-            border-radius: var(--r-full);
-            background-color: var(--surface);
+        
+        #send-btn {
+            background: #1a4d2e;
+            color: #fff;
             border: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            padding: 12px 20px;
+            font-size: 16px;
             cursor: pointer;
-            flex-shrink: 0;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-            outline: none;
-            padding: 0;
+            min-width: 60px;
         }
-
-        .add-button .material-icons {
-            font-size: var(--i-lg);
-            color: var(--text);
-        }
-
-        .input-box {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            background-color: var(--surface);
-            border-radius: calc(var(--b-lg) / 2);
-            padding: 0 var(--s2) 0 var(--s4);
-            height: var(--b-lg);
-            gap: var(--s3);
-            min-width: 0;
-        }
-
-        .message-input {
-            flex: 1;
-            background: none;
-            border: none;
-            color: var(--text);
-            font-family: var(--font);
-            font-size: var(--md);
-            font-weight: var(--normal);
-            outline: none;
-            min-width: 0;
-        }
-
-        .message-input::placeholder {
-            color: var(--text-muted);
-        }
-
-        .input-button {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            flex-shrink: 0;
-            width: var(--b-md);
-            height: var(--b-md);
-            min-width: var(--b-md);
-            min-height: var(--b-md);
-            border-radius: var(--r-full);
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-            outline: none;
-        }
-
-        @media (hover: hover) and (pointer: fine) {
-            .input-button {
-                transition: background-color 0.2s;
-            }
-
-            .input-button:hover {
-                background: var(--surface-hover);
-            }
-        }
-
-        .input-button:active {
-            background: var(--surface-hover);
-        }
-
-        .input-button .material-icons {
-            font-size: var(--i-md);
-            color: var(--text-muted);
-        }
-
-        .send-button {
-            width: var(--b-md);
-            height: var(--b-md);
-            min-width: var(--b-md);
-            min-height: var(--b-md);
-            border-radius: var(--r-full);
-            background-color: var(--primary);
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            flex-shrink: 0;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-            outline: none;
-            padding: 0;
-        }
-
-        .send-button .material-icons {
-            font-size: var(--i-md);
-            color: var(--primary-text);
+        
+        #send-btn:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <button class="icon-button" aria-label="Volver">
-                <span class="material-icons">arrow_back</span>
-            </button>
-        </header>
-
-        <div class="messages-wrapper">
-            <div class="messages-container" id="messagesContainer">
-                <div class="empty-state">
-                    <div class="empty-state-icon">
-                        <span class="material-icons">chat_bubble_outline</span>
-                    </div>
-                    <h2 class="empty-state-title">Inicia una conversación</h2>
-                    <p class="empty-state-subtitle">Pregunta lo que quieras y obtén respuestas instantáneas</p>
-                </div>
-            </div>
+    <div id="header">
+        <h1>DJ - Asistente Musical</h1>
+    </div>
+    
+    <div id="messages">
+        <div class="message assistant">
+            Hola, soy DJ, tu asistente musical. ¿Qué música te gustaría escuchar hoy?
         </div>
-
-        <div class="input-container">
-            <button class="add-button" aria-label="Agregar">
-                <span class="material-icons">add</span>
-            </button>
-
-            <div class="input-box">
-                <input type="text" class="message-input" id="messageInput" placeholder="Pregunta lo que quieras">
-                <button class="input-button" aria-label="Micrófono">
-                    <span class="material-icons">mic</span>
-                </button>
-                <button class="send-button" id="sendButton" aria-label="Iniciar audio">
-                    <span class="material-icons">graphic_eq</span>
-                </button>
-            </div>
-        </div>
+    </div>
+    
+    <div id="input-area">
+        <input type="text" id="user-input" placeholder="Escribe tu mensaje..." autocomplete="off">
+        <button id="send-btn">Enviar</button>
     </div>
 
     <script>
-        const messagesContainer = document.getElementById('messagesContainer');
-        const messageInput = document.getElementById('messageInput');
-        const sendButton = document.getElementById('sendButton');
+        const messagesDiv = document.getElementById('messages');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
         let conversationHistory = [];
+        let musicData = null;
 
-        messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
+        const DJ_SYSTEM_PROMPT = `Eres una inteligencia artificial llamada DJ, especializada exclusivamente en música. Tienes la capacidad de consultar una base de datos simulada de YouTube Music mediante solicitudes a una URL que devuelve información en formato JSON.
+
+Tu tarea es interpretar correctamente la solicitud del usuario, construir la URL adecuada, leer y comprender la estructura del JSON recibido y generar una respuesta musical coherente, útil y precisa basada en esos datos.
+
+Estás entrenado únicamente para actuar como DJ musical, por lo que debes evitar hablar de cualquier tema que no esté relacionado con la música (artistas, canciones, álbumes, géneros, estados de ánimo musicales, playlists, recomendaciones, etc.).
+
+Tu personalidad es alegre, cercana y amable, conectas con el usuario de forma natural y fluida, sin mencionar explícitamente que estás siguiendo reglas o procesos internos.
+
+Responde siempre con un tono cálido y entusiasta, como un DJ profesional que conoce perfectamente los gustos musicales del oyente.
+
+IMPORTANTE: Nunca uses emojis en tus respuestas. Mantén un tono profesional y enfocado únicamente en la información musical.`;
+
+        function addMessage(role, content) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${role}`;
+            msgDiv.textContent = content;
+            messagesDiv.appendChild(msgDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function showLoading() {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'message loading';
+            loadingDiv.id = 'loading-msg';
+            loadingDiv.textContent = 'DJ está buscando música...';
+            messagesDiv.appendChild(loadingDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function hideLoading() {
+            const loadingMsg = document.getElementById('loading-msg');
+            if (loadingMsg) loadingMsg.remove();
+        }
+
+        async function loadMusicData() {
+            try {
+                const response = await fetch('https://braided-music-1--noreplyscuritym.replit.app/api/home');
+                musicData = await response.json();
+            } catch (error) {
+                console.error('Error cargando datos musicales:', error);
+            }
+        }
+
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            addMessage('user', message);
+            userInput.value = '';
+            sendBtn.disabled = true;
+            showLoading();
+
+            conversationHistory.push({
+                role: 'user',
+                content: message
+            });
+
+            try {
+                await loadMusicData();
+                
+                let contextMessage = message;
+                if (musicData) {
+                    contextMessage = `${message}\n\nDatos musicales disponibles de YouTube Music:\n${JSON.stringify(musicData)}`;
+                }
+
+                const messages = [
+                    ...conversationHistory.slice(0, -1),
+                    {
+                        role: 'user',
+                        content: contextMessage
+                    }
+                ];
+
+                const response = await puter.ai.chat(
+                    messages,
+                    {
+                        model: 'claude-3.5-sonnet',
+                        system: DJ_SYSTEM_PROMPT
+                    }
+                );
+
+                hideLoading();
+
+                if (response && response.message && response.message.content) {
+                    const assistantMessage = response.message.content;
+                    addMessage('assistant', assistantMessage);
+                    
+                    conversationHistory.push({
+                        role: 'assistant',
+                        content: assistantMessage
+                    });
+                } else {
+                    addMessage('assistant', 'Lo siento, hubo un error. ¿Podrías intentarlo de nuevo?');
+                }
+            } catch (error) {
+                hideLoading();
+                addMessage('assistant', 'Ups, algo salió mal. Por favor intenta de nuevo.');
+                console.error('Error:', error);
+            }
+
+            sendBtn.disabled = false;
+            userInput.focus();
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
                 sendMessage();
             }
         });
 
-        sendButton.addEventListener('click', sendMessage);
-
-        async function sendMessage() {
-            const text = messageInput.value.trim();
-            if (!text) return;
-
-            const emptyState = messagesContainer.querySelector('.empty-state');
-            if (emptyState) {
-                emptyState.remove();
-            }
-
-            // Agregar mensaje del usuario
-            conversationHistory.push({
-                role: 'user',
-                content: text
-            });
-            addMessage(text, 'user');
-            messageInput.value = '';
-
-            // Crear mensaje del asistente
-            const assistantMessageElement = createAssistantMessage();
-            const bubbleElement = assistantMessageElement.querySelector('.message-bubble');
-
-            try {
-                // Llamar a la API de Puter con streaming usando Claude Sonnet
-                const response = await puter.ai.chat(conversationHistory, {
-                    model: 'claude-sonnet-4-20250514',
-                    stream: true
-                });
-
-                let fullResponse = '';
-
-                // Procesar el stream
-                for await (const chunk of response) {
-                    if (chunk?.text) {
-                        fullResponse += chunk.text;
-                        bubbleElement.textContent = fullResponse;
-                        messagesContainer.parentElement.scrollTop = messagesContainer.parentElement.scrollHeight;
-                    }
-                }
-
-                // Guardar respuesta completa en el historial
-                conversationHistory.push({
-                    role: 'assistant',
-                    content: fullResponse
-                });
-
-            } catch (error) {
-                bubbleElement.textContent = 'Error al obtener respuesta. Por favor intenta de nuevo.';
-                console.error('Error:', error);
-            }
-
-            messagesContainer.parentElement.scrollTop = messagesContainer.parentElement.scrollHeight;
-        }
-
-        function addMessage(text, sender) {
-            const message = document.createElement('div');
-            message.className = `message ${sender}`;
-
-            const bubble = document.createElement('div');
-            bubble.className = 'message-bubble';
-            bubble.textContent = text;
-
-            const time = document.createElement('div');
-            time.className = 'message-time';
-            time.textContent = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-
-            message.appendChild(bubble);
-            message.appendChild(time);
-            messagesContainer.appendChild(message);
-
-            messagesContainer.parentElement.scrollTop = messagesContainer.parentElement.scrollHeight;
-        }
-
-        function createAssistantMessage() {
-            const message = document.createElement('div');
-            message.className = 'message assistant';
-
-            const bubble = document.createElement('div');
-            bubble.className = 'message-bubble';
-            bubble.textContent = '';
-
-            const time = document.createElement('div');
-            time.className = 'message-time';
-            time.textContent = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-
-            message.appendChild(bubble);
-            message.appendChild(time);
-            messagesContainer.appendChild(message);
-
-            messagesContainer.parentElement.scrollTop = messagesContainer.parentElement.scrollHeight;
-            
-            return message;
-        }
+        loadMusicData();
+        userInput.focus();
     </script>
 </body>
 </html>
