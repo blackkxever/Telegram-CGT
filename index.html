@@ -108,7 +108,7 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      padding: var(--md);
+      padding: var(--s4);
     }
 
     .header-content {
@@ -175,7 +175,7 @@
 
     .tabs-wrapper {
       overflow: hidden;
-      padding: 0 0 var(--md) 0;
+      padding: 0 0 var(--s4) 0;
     }
 
     .tabs-container {
@@ -658,17 +658,15 @@
       flex-direction: column;
       transition: background-color 0.5s ease;
       padding: 0;
-      overflow-y: auto;
-      overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
+      overflow: hidden;
     }
 
     .player-content {
       flex: 1;
       display: flex;
       flex-direction: column;
-      min-height: 100%;
-      padding-bottom: var(--s6);
+      height: 100vh;
+      justify-content: space-between;
     }
 
     .player-header {
@@ -677,38 +675,12 @@
       align-items: center;
       padding: var(--s4) var(--pad);
       z-index: 10;
-      position: sticky;
-      top: 0;
-      background: transparent;
-      backdrop-filter: blur(0px);
-      -webkit-backdrop-filter: blur(0px);
-      transition: backdrop-filter 0.3s ease, -webkit-backdrop-filter 0.3s ease, background-color 0.3s ease;
       flex-shrink: 0;
-    }
-
-    .player-header.scrolled {
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-    }
-
-    .player-header-title {
-      font-size: var(--xs);
-      font-weight: var(--bold);
-      color: var(--text);
-      opacity: 0.7;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      text-align: center;
-      flex: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      margin: 0 var(--s3);
     }
 
     .player-album-art-container {
       width: 100%;
-      padding: 0 var(--pad) var(--s6);
+      padding: 0 var(--pad);
       flex-shrink: 0;
     }
 
@@ -727,7 +699,6 @@
       z-index: 2;
       width: 100%;
       padding: 0 var(--pad);
-      margin-bottom: var(--s6);
       flex-shrink: 0;
     }
 
@@ -762,7 +733,7 @@
 
     .player-song-artist {
       font-size: var(--md);
-      font-weight: 500;
+      font-weight: var(--medium);
       color: var(--text);
       opacity: 0.65;
       line-height: 1.4;
@@ -777,7 +748,6 @@
       width: 100%;
       padding: 0 var(--pad);
       z-index: 2;
-      margin-bottom: var(--s6);
       flex-shrink: 0;
     }
 
@@ -816,7 +786,7 @@
     .player-time {
       display: flex;
       justify-content: space-between;
-      font-size: 12px;
+      font-size: var(--xs);
       font-weight: var(--medium);
       color: var(--text);
       opacity: 0.6;
@@ -827,7 +797,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 var(--pad) var(--s1);
+      padding: 0 var(--pad) var(--s4);
       z-index: 2;
       width: 100%;
       max-width: 380px;
@@ -889,133 +859,25 @@
       opacity: 1;
     }
 
-    .player-controls-secondary {
+    .player-tabs {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0 var(--pad) var(--s4);
-      width: 100%;
-      max-width: 380px;
-      margin: 0 auto;
+      padding: 0 var(--pad) var(--s6);
+      z-index: 2;
       flex-shrink: 0;
     }
 
-    .player-secondary-btn {
-      background: transparent;
-      border: none;
-      color: var(--text);
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-      width: 44px;
-      height: 44px;
-      opacity: 0.65;
-      transition: opacity 0.2s, transform 0.1s;
-    }
-
-    .player-secondary-btn .material-icons {
-      font-size: var(--i-md);
-    }
-
-    .player-secondary-btn:active {
-      transform: scale(0.92);
-      opacity: 1;
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-      .player-secondary-btn:hover {
-        opacity: 1;
-      }
-    }
-
-    .player-secondary-group-right {
-      display: flex;
-      align-items: center;
-      gap: var(--s1);
-    }
-
-    .player-lyrics-container {
-      width: calc(100% - var(--pad) * 2);
-      margin: 0 var(--pad);
-      padding: var(--s4);
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      position: relative;
-      flex-shrink: 0;
-    }
-
-    .player-lyrics-title {
-      font-size: var(--sm);
-      font-weight: var(--semibold);
-      color: #fff;
-      opacity: 1;
-      letter-spacing: 0.08em;
-      margin-bottom: var(--s4);
-      text-align: left;
-      width: 100%;
-    }
-
-    .player-lyrics-text {
-      font-size: var(--lg);
-      font-weight: var(--bold);
-      color: #fff;
-      line-height: 1.5;
-      white-space: pre-wrap;
-      text-align: left;
-      width: 100%;
-      opacity: 1;
-      transition: max-height 0.3s ease;
-    }
-
-    .player-lyrics-text.preview {
-      display: -webkit-box;
-      -webkit-line-clamp: 4;
-      line-clamp: 4;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .player-lyrics-expand-btn {
-      background: var(--text);
-      color: var(--bg);
-      border: none;
-      height: var(--b-md);
-      padding: 0 var(--s6);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: var(--r-full);
-      font-family: var(--font);
-      font-size: var(--sm);
-      font-weight: var(--medium);
-      cursor: pointer;
-      margin-top: var(--s4);
-      transition: transform 0.2s, opacity 0.2s;
-    }
-
-    .player-lyrics-expand-btn:active {
-      transform: scale(0.95);
-      opacity: 0.9;
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-      .player-lyrics-expand-btn:hover {
-        opacity: 0.9;
-      }
-    }
-
-    .player-lyrics-source {
+    .player-tab-text {
       font-size: var(--xs);
-      font-weight: var(--medium);
+      font-weight: var(--bold);
       color: var(--text);
-      margin-top: var(--s4);
-      text-align: left;
-      width: 100%;
       opacity: 0.6;
+      cursor: pointer;
+      user-select: none;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
     .search-view {
@@ -1175,7 +1037,6 @@
         <button class="icon-button" aria-label="Cerrar" id="playerCloseButton" type="button">
           <span class="material-icons">keyboard_arrow_down</span>
         </button>
-        <div class="player-header-title" id="playerHeaderTitle">Radio de Rels B</div>
         <button class="icon-button" aria-label="Más opciones" type="button">
           <span class="material-icons">more_vert</span>
         </button>
@@ -1217,20 +1078,11 @@
           <span class="material-icons">repeat</span>
         </button>
       </div>
-      <div class="player-controls-secondary">
-        <button class="player-secondary-btn" aria-label="Dispositivos">
-          <span class="material-icons">devices</span>
-        </button>
-        <div class="player-secondary-group-right">
-          <button class="player-secondary-btn" aria-label="Compartir">
-            <span class="material-icons">ios_share</span>
-          </button>
-          <button class="player-secondary-btn" aria-label="Cola de reproducción">
-            <span class="material-icons">queue_music</span>
-          </button>
-        </div>
+      <div class="player-tabs">
+        <div class="player-tab-text">A continuación</div>
+        <div class="player-tab-text">Letra</div>
+        <div class="player-tab-text">Similares</div>
       </div>
-      <div class="player-lyrics-container" id="playerLyricsContainer"></div>
     </div>
   </div>
 
@@ -1368,7 +1220,6 @@
       const color = await getDominantColor(imageUrl);
       currentDominantColor = color;
       const playerView = document.getElementById('playerView');
-      const lyricsContainer = document.getElementById('playerLyricsContainer');
       const playerHeader = document.getElementById('playerHeader');
 
       if (playerView) {
@@ -1376,15 +1227,9 @@
         playerView.style.backgroundColor = darkenedColor;
       }
 
-      if (lyricsContainer) {
-        const lyricsColor = darkenColor(color, 0.2);
-        lyricsContainer.style.backgroundColor = lyricsColor;
-        lyricsContainer.style.borderRadius = 'var(--r-md)';
-      }
-
       if (playerHeader) {
-        const scrollY = playerView.scrollTop;
-        updatePlayerHeaderBackground();
+        const headerColor = darkenColor(color, 0.65);
+        playerHeader.style.backgroundColor = headerColor;
       }
     };
 
@@ -1404,40 +1249,6 @@
         return item.thumbnails[0].url;
       }
       return null;
-    };
-
-    const updatePlayerHeaderBackground = () => {
-      const playerHeader = document.getElementById('playerHeader');
-      const playerView = document.getElementById('playerView');
-      
-      if (!playerHeader || !playerView) return;
-
-      const scrollY = playerView.scrollTop;
-      const threshold = 100;
-      
-      if (scrollY > threshold) {
-        playerHeader.classList.add('scrolled');
-        const headerColor = darkenColor(currentDominantColor, 0.65);
-        playerHeader.style.backgroundColor = headerColor;
-      } else {
-        const opacity = scrollY / threshold;
-        const headerColor = darkenColor(currentDominantColor, 0.65);
-        const match = headerColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
-        
-        if (match) {
-          const r = parseInt(match[1]);
-          const g = parseInt(match[2]);
-          const b = parseInt(match[3]);
-          
-          if (scrollY > 0) {
-            playerHeader.classList.add('scrolled');
-            playerHeader.style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
-          } else {
-            playerHeader.classList.remove('scrolled');
-            playerHeader.style.backgroundColor = 'transparent';
-          }
-        }
-      }
     };
 
     const App = {
@@ -1626,32 +1437,21 @@
         const playerView = document.getElementById('playerView');
         if (playerView) {
           let playerStartY = 0;
-          let playerCurrentY = 0;
-
-          playerView.addEventListener('scroll', () => {
-            if (this.currentView === 'player') {
-              updatePlayerHeaderBackground();
-            }
-          });
 
           playerView.addEventListener('touchstart', (e) => {
-            if (playerView.scrollTop === 0) {
-              playerStartY = e.touches[0].clientY;
-            }
+            playerStartY = e.touches[0].clientY;
           }, { passive: true });
 
           playerView.addEventListener('touchmove', (e) => {
-            if (playerView.scrollTop === 0) {
-              playerCurrentY = e.touches[0].clientY;
-              const deltaY = playerCurrentY - playerStartY;
-              
-              if (deltaY > 100) {
-                if (this.viewHistory.length > 0) {
-                  const previousView = this.viewHistory.pop();
-                  this.showView(previousView, true);
-                } else {
-                  this.showView('home', true);
-                }
+            const playerCurrentY = e.touches[0].clientY;
+            const deltaY = playerCurrentY - playerStartY;
+            
+            if (deltaY > 100) {
+              if (this.viewHistory.length > 0) {
+                const previousView = this.viewHistory.pop();
+                this.showView(previousView, true);
+              } else {
+                this.showView('home', true);
               }
             }
           }, { passive: true });
@@ -1717,8 +1517,6 @@
           if (key === viewName) {
             if (key === 'player') {
               this.views[key].style.display = 'flex';
-              this.views[key].scrollTop = 0;
-              updatePlayerHeaderBackground();
             } else {
               this.views[key].style.display = 'block';
             }
@@ -1750,13 +1548,11 @@
         const albumArt = document.getElementById('playerAlbumArt');
         const songTitle = document.getElementById('playerSongTitle');
         const songArtist = document.getElementById('playerSongArtist');
-        const headerTitle = document.getElementById('playerHeaderTitle');
 
         currentDominantColor = 'rgb(0, 0, 0)';
         playerView.style.backgroundColor = 'rgb(0, 0, 0)';
         if (playerHeader) {
-          playerHeader.style.backgroundColor = 'transparent';
-          playerHeader.classList.remove('scrolled');
+          playerHeader.style.backgroundColor = 'rgb(0, 0, 0)';
         }
 
         if (track) {
@@ -1769,6 +1565,9 @@
           } else {
             playerView.style.backgroundColor = 'rgb(0, 0, 0)';
             currentDominantColor = 'rgb(0, 0, 0)';
+            if (playerHeader) {
+              playerHeader.style.backgroundColor = 'rgb(0, 0, 0)';
+            }
           }
 
           if (track.title) {
@@ -1779,16 +1578,6 @@
             songArtist.textContent = track.artist;
           } else if (track.album) {
             songArtist.textContent = track.album;
-          }
-
-          if (headerTitle) {
-            headerTitle.textContent = sectionTitle || track.album || track.artist || 'Reproduciendo';
-          }
-
-          if (track.videoId) {
-            fetchLyrics(track.videoId);
-          } else {
-            clearLyrics();
           }
         }
 
@@ -2239,83 +2028,6 @@
         renderTabs(data.header?.chips || []);
         if (data.sections) renderContent(data.sections);
       } catch (err) {}
-    };
-
-    const fetchLyrics = async (videoId) => {
-      const lyricsContainer = document.getElementById('playerLyricsContainer');
-      if (!lyricsContainer) return;
-
-      lyricsContainer.innerHTML = '';
-
-      try {
-        const res = await fetch(`${API}/player/${videoId}`);
-        if (!res.ok) return;
-
-        const data = await res.json();
-
-        if (data.lyrics && data.lyrics.text) {
-          displayLyrics(data.lyrics.text, data.lyrics.source);
-        }
-      } catch (err) {}
-    };
-
-    const displayLyrics = (text, source) => {
-      const lyricsContainer = document.getElementById('playerLyricsContainer');
-      if (!lyricsContainer) return;
-
-      lyricsContainer.innerHTML = '';
-
-      const title = document.createElement('div');
-      title.className = 'player-lyrics-title';
-      title.textContent = 'Vista previa de la letra';
-      lyricsContainer.appendChild(title);
-
-      const lyricsText = document.createElement('div');
-      lyricsText.className = 'player-lyrics-text preview';
-      lyricsText.textContent = text.trim();
-      lyricsContainer.appendChild(lyricsText);
-
-      const expandBtn = document.createElement('button');
-      expandBtn.className = 'player-lyrics-expand-btn';
-      expandBtn.textContent = 'Mostrar letra';
-      expandBtn.setAttribute('type', 'button');
-
-      let sourceEl = null;
-      if (source) {
-        sourceEl = document.createElement('div');
-        sourceEl.className = 'player-lyrics-source';
-        sourceEl.textContent = source;
-        sourceEl.style.display = 'none';
-      }
-
-      addUnifiedClickHandler(expandBtn, () => {
-        const isPreview = lyricsText.classList.contains('preview');
-
-        if (isPreview) {
-          lyricsText.classList.remove('preview');
-          expandBtn.textContent = 'Ocultar letra';
-          title.textContent = 'Letra';
-          if (sourceEl) sourceEl.style.display = 'block';
-        } else {
-          lyricsText.classList.add('preview');
-          expandBtn.textContent = 'Mostrar letra';
-          title.textContent = 'Vista previa de la letra';
-          if (sourceEl) sourceEl.style.display = 'none';
-          lyricsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-      });
-
-      lyricsContainer.appendChild(expandBtn);
-
-      if (sourceEl) {
-        lyricsContainer.appendChild(sourceEl);
-      }
-    };
-
-    const clearLyrics = () => {
-      const lyricsContainer = document.getElementById('playerLyricsContainer');
-      if (!lyricsContainer) return;
-      lyricsContainer.innerHTML = '';
     };
 
     App.init();
