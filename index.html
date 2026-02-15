@@ -4,11 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#007e67">
     <title>CONALEP Estudiantes</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/bold/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2/src/fill/style.css">
     <script>
@@ -18,86 +17,352 @@
                     colors: {
                         conalep: {
                             primary: '#007E67',
-                            black: '#161a1d',
-                            gray: '#98989A',
-                            burgundy: '#611232',
-                            burgundyLight: '#9b2247',
-                            teal: '#1e5b4f',
-                            tealDark: '#002f2a',
-                            gold: '#a57f2c',
-                            goldLight: '#e6d194'
+                            dark: '#1a1a1a',
+                            gray: '#6b7280',
+                            light: '#f9fafb'
                         }
                     },
                     fontFamily: {
-                        'montserrat': ['Montserrat', 'sans-serif']
+                        inter: ['Inter', 'sans-serif']
                     }
                 }
             }
         }
     </script>
 </head>
-<body class="font-montserrat bg-gray-50 antialiased">
-    <header class="fixed top-0 left-0 right-0 bg-white z-50">
-        <div class="h-16 px-4 flex items-center justify-between">
-            <h1 class="text-2xl font-semibold text-conalep-black">Aseo</h1>
-            <button class="w-12 h-12 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
-                <i class="ph-bold ph-user-circle text-3xl text-conalep-primary"></i>
+<body class="font-inter bg-conalep-light overflow-hidden h-screen">
+
+
+<div id="loginScreen" class="fixed inset-0 bg-conalep-light z-50 flex flex-col">
+    <div class="flex-1 flex flex-col items-center justify-center px-6">
+        <div class="w-full max-w-sm space-y-8">
+            <div class="space-y-4">
+                <div class="space-y-2">
+                    <label class="text-sm font-medium text-conalep-dark block">Correo Institucional</label>
+                    <div class="relative">
+                        <div class="absolute left-4 top-1/2 -translate-y-1/2">
+                            <i class="ph-bold ph-envelope text-xl text-conalep-gray"></i>
+                        </div>
+                        <input 
+                            type="email" 
+                            id="loginEmail" 
+                            placeholder="correo@conalep.edu.mx"
+                            class="w-full h-14 pl-12 pr-4 bg-white rounded-xl text-conalep-dark placeholder:text-conalep-gray/40 border-2 border-transparent focus:border-conalep-primary focus:outline-none transition-colors"
+                        >
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-sm font-medium text-conalep-dark block">Contraseña</label>
+                    <div class="relative">
+                        <div class="absolute left-4 top-1/2 -translate-y-1/2">
+                            <i class="ph-bold ph-lock text-xl text-conalep-gray"></i>
+                        </div>
+                        <input 
+                            type="password" 
+                            id="loginPassword" 
+                            placeholder="Ingresa tu contraseña"
+                            class="w-full h-14 pl-12 pr-4 bg-white rounded-xl text-conalep-dark placeholder:text-conalep-gray/40 border-2 border-transparent focus:border-conalep-primary focus:outline-none transition-colors"
+                        >
+                    </div>
+                </div>
+
+                <button 
+                    id="loginBtn" 
+                    class="w-full h-14 bg-conalep-primary text-white font-semibold rounded-xl"
+                >
+                    Iniciar sesión
+                </button>
+
+                <div id="errorMessage" class="hidden bg-red-50 text-red-700 px-4 py-3 rounded-xl text-sm text-center">
+                    Credenciales incorrectas
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button id="forgotPasswordBtn" class="text-sm text-conalep-primary font-medium">
+                    ¿Olvidaste tu contraseña?
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="mainApp" class="hidden">
+    <header class="fixed top-0 left-0 right-0 bg-white h-16 z-40">
+        <div class="h-16 px-5 flex items-center justify-between">
+            <h1 id="headerTitle" class="text-xl font-semibold text-conalep-dark">Aseo</h1>
+            <button id="logoutBtn" class="w-10 h-10 flex items-center justify-center">
+                <i class="ph-bold ph-user-circle text-3xl text-conalep-gray"></i>
             </button>
         </div>
     </header>
 
-
-<main class="pt-20 pb-24 px-4 space-y-4">
-    <div class="bg-conalep-primary rounded-2xl p-6">
-        <div class="flex items-start gap-4">
-            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                <i class="ph-bold ph-calendar-check text-2xl text-white"></i>
-            </div>
-            <div class="flex-1">
-                <h2 class="text-white font-semibold text-lg mb-1">Próximo turno asignado</h2>
-                <p class="text-white/90 text-sm mb-3">Viernes 21 de febrero, 2026</p>
-                <div class="bg-white/10 rounded-lg px-3 py-2 inline-block">
-                    <span class="text-white text-xs font-medium">Faltan 6 días</span>
+    <div class="fixed top-16 bottom-20 left-0 right-0 overflow-y-auto">
+        <main id="aseoScreen" class="px-5 py-4 space-y-4">
+            <div class="bg-conalep-primary rounded-2xl p-6">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-white/15 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="ph-bold ph-calendar-check text-2xl text-white"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h2 class="text-white font-semibold text-lg mb-2">Próximo turno asignado</h2>
+                        <p class="text-white/85 text-sm mb-3">Viernes 21 de febrero, 2026</p>
+                        <div class="bg-white/15 rounded-lg px-3 py-2 inline-block">
+                            <span class="text-white text-sm font-medium">Faltan 6 días</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+
+            <div class="bg-white rounded-2xl p-6">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="ph-bold ph-warning text-2xl text-amber-600"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h2 class="text-conalep-dark font-semibold text-base mb-2">Cuota de aseo pendiente</h2>
+                        <p class="text-conalep-gray text-sm leading-relaxed mb-3">Tienes un pago pendiente correspondiente a la cuota grupal de aseo. Esta aportación se destina a la compra de materiales de limpieza para el aula.</p>
+                        <p class="text-conalep-gray text-xs">Realiza tu pago con el jefe de limpieza del grupo.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <main id="avisosScreen" class="px-5 py-4 space-y-4 hidden">
+            <div class="bg-conalep-primary/5 rounded-2xl p-6">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-conalep-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="ph-bold ph-bell-ringing text-2xl text-conalep-primary"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-conalep-dark font-semibold text-base mb-2">Configurar notificaciones</h3>
+                        <p class="text-conalep-gray text-sm leading-relaxed mb-3">Active las notificaciones para recibir información oportuna sobre avisos institucionales, cambios de horario y comunicados oficiales del plantel.</p>
+                        <button class="bg-conalep-primary text-white text-sm font-medium px-4 py-2 rounded-lg">
+                            Activar notificaciones
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="ph-bold ph-warning-circle text-2xl text-red-600"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-conalep-dark font-semibold text-base mb-2">Suspensión de actividades académicas</h3>
+                        <p class="text-conalep-gray text-sm leading-relaxed mb-3">Se informa que el día 18 de febrero no habrá clases debido a junta técnica pedagógica. Las actividades académicas se reanudan el 19 de febrero en horario habitual.</p>
+                        <span class="text-conalep-gray text-xs">Publicado hace 2 horas</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="ph-bold ph-calendar-blank text-2xl text-blue-600"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-conalep-dark font-semibold text-base mb-2">Evaluación del módulo 3</h3>
+                        <p class="text-conalep-gray text-sm leading-relaxed mb-3">Recordatorio: La evaluación correspondiente al módulo 3 está programada para el 24 de febrero. Se recomienda repasar las unidades de la 1 a la 4.</p>
+                        <span class="text-conalep-gray text-xs">Publicado hace 5 horas</span>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <div class="bg-white rounded-2xl p-6">
-        <div class="flex items-start gap-4">
-            <div class="w-12 h-12 bg-conalep-goldLight rounded-xl flex items-center justify-center flex-shrink-0">
-                <i class="ph-bold ph-warning text-2xl text-conalep-gold"></i>
-            </div>
-            <div class="flex-1">
-                <h2 class="text-conalep-black font-semibold text-base mb-2">Cuota de aseo pendiente</h2>
-                <p class="text-conalep-black text-sm leading-relaxed mb-3">Tienes un pago pendiente correspondiente a la cuota grupal de aseo. Esta aportación se destina a la compra de materiales de limpieza para el aula.</p>
-                <p class="text-conalep-gray text-xs">Por favor, realiza tu pago con el jefe de limpieza del grupo.</p>
-            </div>
+    <nav class="fixed bottom-0 left-0 right-0 bg-white h-20">
+        <div class="h-20 px-6 flex items-center justify-around">
+            <button onclick="showScreen('aseo')" id="navAseo" class="flex flex-col items-center justify-center w-20 h-16 rounded-xl bg-conalep-primary/10">
+                <i class="ph-fill ph-broom text-2xl text-conalep-primary mb-1"></i>
+                <span class="text-xs font-semibold text-conalep-primary">Aseo</span>
+            </button>
+            <button onclick="showScreen('avisos')" id="navAvisos" class="flex flex-col items-center justify-center w-20 h-16 rounded-xl relative">
+                <i class="ph-bold ph-bell text-2xl text-conalep-gray mb-1"></i>
+                <span class="text-xs font-medium text-conalep-gray">Avisos</span>
+                <span class="absolute top-2 right-4 w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
         </div>
-    </div>
-</main>
+    </nav>
+</div>
 
-<nav class="fixed bottom-0 left-0 right-0 bg-white">
-    <div class="h-20 px-2 flex items-center justify-around">
-        <a href="#aseo" class="flex flex-col items-center justify-center w-20 h-16 rounded-xl bg-conalep-primary/10 transition-colors">
-            <i class="ph-fill ph-broom text-2xl text-conalep-primary mb-1"></i>
-            <span class="text-xs font-semibold text-conalep-primary">Aseo</span>
-        </a>
-        <a href="#avisos" class="flex flex-col items-center justify-center w-20 h-16 rounded-xl hover:bg-gray-100 transition-colors relative">
-            <i class="ph-bold ph-bell text-2xl text-conalep-gray mb-1"></i>
-            <span class="text-xs font-medium text-conalep-gray">Avisos</span>
-            <span class="absolute top-2 right-4 w-2 h-2 bg-conalep-burgundyLight rounded-full"></span>
-        </a>
-        <a href="#tareas" class="flex flex-col items-center justify-center w-20 h-16 rounded-xl hover:bg-gray-100 transition-colors">
-            <i class="ph-bold ph-clipboard-text text-2xl text-conalep-gray mb-1"></i>
-            <span class="text-xs font-medium text-conalep-gray">Tareas</span>
-        </a>
-        <a href="#tarjeta" class="flex flex-col items-center justify-center w-20 h-16 rounded-xl hover:bg-gray-100 transition-colors">
-            <i class="ph-bold ph-identification-card text-2xl text-conalep-gray mb-1"></i>
-            <span class="text-xs font-medium text-conalep-gray">Tarjeta</span>
-        </a>
-    </div>
-</nav>
+<script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { getDatabase, ref, onValue, off } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCvL6d55W8CUDmgJG6_uZa4Yy86KCu9KhE",
+        authDomain: "conalep-juarez.firebaseapp.com",
+        databaseURL: "https://conalep-juarez-default-rtdb.firebaseio.com",
+        projectId: "conalep-juarez",
+        storageBucket: "conalep-juarez.firebasestorage.app",
+        messagingSenderId: "566612298303",
+        appId: "1:566612298303:web:c9c5f21ed5dcfdf1fb5ec2"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    const DOM = {
+        loginScreen: document.getElementById('loginScreen'),
+        mainApp: document.getElementById('mainApp'),
+        loginEmail: document.getElementById('loginEmail'),
+        loginPassword: document.getElementById('loginPassword'),
+        loginBtn: document.getElementById('loginBtn'),
+        logoutBtn: document.getElementById('logoutBtn'),
+        errorMessage: document.getElementById('errorMessage'),
+        forgotPasswordBtn: document.getElementById('forgotPasswordBtn'),
+        headerTitle: document.getElementById('headerTitle')
+    };
+
+    let currentListener = null;
+
+    function showError(message) {
+        DOM.errorMessage.textContent = message;
+        DOM.errorMessage.classList.remove('hidden');
+        setTimeout(() => DOM.errorMessage.classList.add('hidden'), 5000);
+    }
+
+    async function handleLogin(e) {
+        e.preventDefault();
+        const email = DOM.loginEmail.value.trim();
+        const password = DOM.loginPassword.value.trim();
+
+        if (!email || !password) {
+            showError('Complete todos los campos requeridos');
+            return;
+        }
+
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+        } catch (error) {
+            console.error('Error de login:', error);
+            showError('Credenciales incorrectas');
+        }
+    }
+
+    async function handleLogout() {
+        if (confirm('¿Deseas cerrar sesión?')) {
+            try {
+                if (currentListener) {
+                    off(currentListener);
+                    currentListener = null;
+                }
+                await signOut(auth);
+            } catch (error) {
+                console.error('Error al cerrar sesión:', error);
+            }
+        }
+    }
+
+    async function handleForgotPassword() {
+        const email = DOM.loginEmail.value.trim();
+        if (!email) {
+            showError('Ingresa tu correo para recuperar la contraseña');
+            return;
+        }
+
+        try {
+            await sendPasswordResetEmail(auth, email);
+            showError('Se ha enviado un correo para restablecer tu contraseña');
+        } catch (error) {
+            console.error('Error al enviar correo:', error);
+            showError('Error al enviar el correo de recuperación');
+        }
+    }
+
+    function setupRealtimeListener(email) {
+        if (currentListener) off(currentListener);
+        
+        const rootRef = ref(db, '/');
+        currentListener = rootRef;
+        
+        onValue(rootRef, (snapshot) => {
+            if (!snapshot.exists()) return;
+            
+            const data = snapshot.val();
+            const emailNormalizado = email.trim().toLowerCase();
+            
+            for (const section of ['Alumno', 'alumnos']) {
+                if (data[section]) {
+                    for (const key in data[section]) {
+                        const alumno = data[section][key];
+                        if (alumno?.correo?.trim().toLowerCase() === emailNormalizado) {
+                            const nombre = alumno.nombreCompleto || alumno.nombre || 'Alumno';
+                            DOM.headerTitle.textContent = `Hola, ${nombre.split(' ')[0]}`;
+                            return;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            DOM.loginScreen.classList.add('hidden');
+            DOM.mainApp.classList.remove('hidden');
+            setupRealtimeListener(user.email);
+        } else {
+            DOM.loginScreen.classList.remove('hidden');
+            DOM.mainApp.classList.add('hidden');
+            DOM.headerTitle.textContent = 'Aseo';
+            if (currentListener) {
+                off(currentListener);
+                currentListener = null;
+            }
+        }
+    });
+
+    DOM.loginBtn.addEventListener('click', handleLogin);
+    DOM.logoutBtn.addEventListener('click', handleLogout);
+    DOM.forgotPasswordBtn.addEventListener('click', handleForgotPassword);
+    DOM.loginPassword.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleLogin(e);
+    });
+</script>
+
+<script>
+    function showScreen(screen) {
+        const screens = {
+            aseo: { element: document.getElementById('aseoScreen'), title: 'Aseo', nav: 'navAseo' },
+            avisos: { element: document.getElementById('avisosScreen'), title: 'Avisos', nav: 'navAvisos' }
+        };
+
+        Object.values(screens).forEach(s => {
+            s.element.classList.add('hidden');
+            const navBtn = document.getElementById(s.nav);
+            navBtn.classList.remove('bg-conalep-primary/10');
+            const icon = navBtn.querySelector('i');
+            icon.classList.remove('ph-fill', 'text-conalep-primary');
+            icon.classList.add('ph-bold', 'text-conalep-gray');
+            const span = navBtn.querySelector('span');
+            span.classList.remove('font-semibold', 'text-conalep-primary');
+            span.classList.add('font-medium', 'text-conalep-gray');
+        });
+
+        const activeScreen = screens[screen];
+        activeScreen.element.classList.remove('hidden');
+        
+        const activeNav = document.getElementById(activeScreen.nav);
+        activeNav.classList.add('bg-conalep-primary/10');
+        const activeIcon = activeNav.querySelector('i');
+        activeIcon.classList.remove('ph-bold', 'text-conalep-gray');
+        activeIcon.classList.add('ph-fill', 'text-conalep-primary');
+        const activeSpan = activeNav.querySelector('span');
+        activeSpan.classList.remove('font-medium', 'text-conalep-gray');
+        activeSpan.classList.add('font-semibold', 'text-conalep-primary');
+
+        if (screen === 'avisos') {
+            const notificationDot = activeNav.querySelector('.bg-red-500');
+            if (notificationDot) notificationDot.remove();
+        }
+    }
+</script>
 
 
 </body>
